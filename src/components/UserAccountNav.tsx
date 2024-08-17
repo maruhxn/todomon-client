@@ -47,9 +47,11 @@ export default function UserAccountNav({ userInfo }: { userInfo: UserInfo }) {
           </DropdownMenuItem> */}
 
         <DropdownMenuItem className="cursor-pointer" asChild>
-          <Link href="/profile">프로필</Link>
+          <Link href="/members/profile/my">프로필</Link>
         </DropdownMenuItem>
-
+        <DropdownMenuItem className="cursor-pointer" asChild>
+          <Link href="/members/pets">나의 펫</Link>
+        </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem className="cursor-pointer">
           <form action={logout}>

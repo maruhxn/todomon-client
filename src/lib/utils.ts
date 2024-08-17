@@ -19,6 +19,12 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+export function getProfileImage(profileImageUrl: string) {
+  return profileImageUrl.startsWith("https://")
+    ? profileImageUrl
+    : `${process.env.S3_PUBLIC_ENDPOINT}/${profileImageUrl}`;
+}
+
 export function getRandomColor(): string {
   const letters = "0123456789ABCDEF";
   let color: string;

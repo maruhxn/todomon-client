@@ -161,7 +161,6 @@ export default function AddTodoDialog({
         description: error.message,
         variant: "destructive",
       });
-    } finally {
     }
   }
 
