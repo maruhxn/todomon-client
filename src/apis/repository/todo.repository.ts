@@ -105,7 +105,7 @@ export const updateTodoRequest = async (
 
   const result =
     UpdateAndDeleteTodoQueryParamsValidator.safeParse(queryParameter);
-  if (!result.success) throw new Error(result.error.message);
+  if (!result.success) throw new Error(result.error.flatten().formErrors[0]);
 
   const queryParams = new URLSearchParams({
     isInstance: queryParameter.isInstance.toString(),

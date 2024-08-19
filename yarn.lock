@@ -410,7 +410,7 @@
     "@radix-ui/react-label" "2.1.0"
     "@radix-ui/react-primitive" "2.0.0"
 
-"@radix-ui/react-hover-card@1.1.1":
+"@radix-ui/react-hover-card@1.1.1", "@radix-ui/react-hover-card@^1.1.1":
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/@radix-ui/react-hover-card/-/react-hover-card-1.1.1.tgz#2982a5a91c7ae5a98e0cacd845fbdfbfdcdab355"
   integrity sha512-IwzAOP97hQpDADYVKrEEHUH/b2LA+9MgB0LgdmnbFO2u/3M5hmEofjjr2M6CyzUblaAqJdFm6B7oFtU72DPXrA==

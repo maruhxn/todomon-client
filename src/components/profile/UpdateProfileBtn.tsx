@@ -73,7 +73,7 @@ export default function UpdateProfileBtn({ profile }: { profile: ProfileDto }) {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button variant="outline" className="w-full">
-          Update Profile
+          프로필 수정
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">

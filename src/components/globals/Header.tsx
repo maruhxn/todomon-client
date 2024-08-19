@@ -1,17 +1,15 @@
 import { UserInfo } from "@/types/auth";
-import { CalendarIcon } from "lucide-react";
 import Link from "next/link";
-import LoginModal from "./LoginModal";
-import { Button } from "./ui/button";
-import { Dialog, DialogTrigger } from "./ui/dialog";
-import UserAccountNav from "./UserAccountNav";
+import LoginModal from "../LoginModal";
+import UserAccountNav from "../UserAccountNav";
+import { Button } from "../ui/button";
+import { Dialog, DialogTrigger } from "../ui/dialog";
 
 export default function Header({ userInfo }: { userInfo?: UserInfo | null }) {
   return (
-    <header className="flex items-center justify-between bg-background px-6 py-4 border-b">
+    <header className="flex items-center justify-between bg-background px-6 py-2 border-b">
       <Link href="/" className="flex items-center gap-2" prefetch={false}>
-        <CalendarIcon className="h-6 w-6" />
-        <span className="text-xl font-bold">Todomon</span>
+        <span className="text-xl font-bold">TODOMON</span>
       </Link>
       {userInfo ? (
         <UserAccountNav userInfo={userInfo} />

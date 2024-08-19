@@ -9,7 +9,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 import { cn, getProfileImage } from "@/lib/utils";
-import { PawPrintIcon, StarIcon } from "lucide-react";
+import { BadgeCheckIcon, StarIcon } from "lucide-react";
 import { notFound } from "next/navigation";
 
 export default async function ProfilePage({
@@ -31,6 +31,8 @@ export default async function ProfilePage({
   if (isNaN(memberId)) {
     return notFound();
   }
+
+  console.log(isMyProfile);
 
   const profile = await getProfileRequest(memberId);
 
@@ -71,8 +73,8 @@ export default async function ProfilePage({
             </div>
             <div className="flex items-center gap-4 mt-4 text-sm text-muted-foreground">
               <div className="flex items-center gap-2">
-                <StarIcon className="w-4 h-4" />
-                <span className="font-medium">{`Level ${profile.level}`}</span>
+                <StarIcon className="w-4 h-4 fill-yellow-500 stroke-yellow-500" />
+                <span className="font-medium">{`Lv. ${profile.level}`}</span>
               </div>
               <div className="flex items-center gap-2">
                 <Progress
@@ -85,28 +87,32 @@ export default async function ProfilePage({
             </div>
             <Separator className="my-4" />
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <PawPrintIcon className="w-4 h-4" />
+              <BadgeCheckIcon className="size-4 text-black fill-yellow-500" />
               {profile.representPetItem ? (
                 <div
-                  className={cn(
-                    "flex gap-2 font-medium",
-                    `text-${profile.representPetItem.color}`
-                  )}
+                  className={cn("flex gap-2 font-medium items-center")}
+                  style={{ color: profile.representPetItem.color }}
                 >
-                  <span>
+                  <span className="font-bold">
                     {`[${profile.representPetItem.rarity}] ${profile.representPetItem.name}`}
                   </span>
-                  <span>${profile.representPetItem.appearance}</span>
+                  <span className="text-lg">
+                    {profile.representPetItem.appearance}
+                  </span>
                 </div>
               ) : (
                 <span className="font-medium">대표 펫이 없습니다</span>
               )}
             </div>
-            <Separator className="my-4" />
-            <div className="flex items-center gap-4">
-              <UpdateProfileBtn profile={profile} />
-              <WithdrawBtn memberId={memberId} />
-            </div>
+            {isMyProfile && (
+              <>
+                <Separator className="my-4" />
+                <div className="flex items-center gap-4">
+                  <UpdateProfileBtn profile={profile} />
+                  <WithdrawBtn memberId={memberId} />
+                </div>
+              </>
+            )}
           </div>
         </CardContent>
       </Card>

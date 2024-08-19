@@ -1,5 +1,6 @@
 import { getAuthRequest } from "@/apis/repository/auth.repository";
-import Header from "@/components/Header";
+import Footer from "@/components/globals/Footer";
+import Header from "@/components/globals/Header";
 import { Toaster } from "@/components/ui/toaster";
 import { cn } from "@/lib/utils";
 import type { Metadata } from "next";
@@ -37,6 +38,7 @@ export default async function RootLayout({
       >
         <Header userInfo={userInfo} />
         {children}
+        <Footer />
         <Toaster />
       </body>
     </html>

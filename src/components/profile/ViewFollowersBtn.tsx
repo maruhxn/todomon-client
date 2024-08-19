@@ -50,7 +50,7 @@ export default function ViewFollowersBtn({
           className="cursor-pointer rounded-md hover:ring-offset-4 hover:ring-black hover:ring-2"
           onClick={getFollowerList}
         >
-          <span className="font-medium">{followerCnt}</span> followers
+          <span className="font-medium">{followerCnt}</span> 팔로워
         </div>
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
@@ -61,7 +61,7 @@ export default function ViewFollowersBtn({
           <div className="grid grid-cols-1 gap-4">
             {followers.length > 0 &&
               followers.map((follower) => (
-                <div className="flex items-center gap-4">
+                <div key={follower.id} className="flex items-center gap-4">
                   <Avatar className="w-12 h-12">
                     <AvatarImage
                       src={getProfileImage(follower.profileImageUrl)}

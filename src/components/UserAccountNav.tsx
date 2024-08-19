@@ -50,7 +50,7 @@ export default function UserAccountNav({ userInfo }: { userInfo: UserInfo }) {
           <Link href="/members/profile/my">프로필</Link>
         </DropdownMenuItem>
         <DropdownMenuItem className="cursor-pointer" asChild>
-          <Link href="/members/pets">나의 펫</Link>
+          <Link href="/members/pets/my">나의 펫</Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem className="cursor-pointer">

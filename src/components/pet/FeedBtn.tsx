@@ -1,6 +1,5 @@
 "use client";
-
-import { withdrawRequest } from "@/apis/repository/members.repository";
+import { feedToPetRequest } from "@/apis/repository/pet.repository";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
 import { Button } from "../ui/button";
@@ -8,24 +7,25 @@ import {
   Dialog,
   DialogClose,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "../ui/dialog";
+import { Input } from "../ui/input";
 
-export default function WithdrawBtn({ memberId }: { memberId: number }) {
+export default function FeedBtn({ petId }: { petId: number }) {
   const [open, setOpen] = useState<boolean>(false);
+  const [feedCnt, setFeedCnt] = useState<number>(0);
   const { toast } = useToast();
 
   async function withdraw() {
     try {
-      await withdrawRequest(memberId);
+      await feedToPetRequest(petId, feedCnt);
 
       toast({
         title: "성공",
-        description: "투두 생성에 성공했습니다",
+        description: "먹이 주기에 성공했습니다",
       });
     } catch (error: any) {
       return toast({
@@ -36,28 +36,31 @@ export default function WithdrawBtn({ memberId }: { memberId: number }) {
     } finally {
     }
   }
-
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="destructive" className="w-full">
-          회원 탈퇴
-        </Button>
+        <Button className="w-full h-8">먹이 주기</Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>회원 탈퇴</DialogTitle>
-          <DialogDescription>정말로 회원을 탈퇴하시겠습니까?</DialogDescription>
+          <DialogTitle>먹이 주기</DialogTitle>
         </DialogHeader>
+        <Input
+          type="number"
+          value={feedCnt}
+          min={1}
+          required
+          onChange={(e) => setFeedCnt(parseInt(e.currentTarget.value))}
+        />
         <DialogFooter>
-          <DialogClose asChild>
+          <DialogClose>
             <Button onClick={withdraw} type="button" variant="destructive">
-              네
+              확인
             </Button>
           </DialogClose>
-          <DialogClose asChild>
+          <DialogClose>
             <Button type="button" variant="secondary">
-              아니요
+              닫기
             </Button>
           </DialogClose>
         </DialogFooter>
