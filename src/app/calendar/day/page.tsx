@@ -1,8 +1,8 @@
 import { getTodoByDay } from "@/apis/repository/todo.repository";
-import DayCalendarAddDialogBtn from "@/components/DayCalendarAddDialogBtn";
-import DayCalendarAllDayTodoBox from "@/components/DayCalendarAllDayTodoSection";
-import DayCalendarTimeControlSection from "@/components/DayCalendarTimeControlSection";
-import DayCalendarTodoBox from "@/components/DayCalendarTodoBox";
+import DayCalendarAddDialogBtn from "@/components/calendar/day/DayCalendarAddDialogBtn";
+import DayCalendarAllDayTodoBox from "@/components/calendar/day/DayCalendarAllDayTodoSection";
+import DayCalendarTimeControlSection from "@/components/calendar/day/DayCalendarTimeControlSection";
+import DayCalendarTodoBox from "@/components/calendar/day/DayCalendarTodoBox";
 import { times } from "@/lib/constants";
 import { TodoItem } from "@/types/todo";
 import { format } from "date-fns";

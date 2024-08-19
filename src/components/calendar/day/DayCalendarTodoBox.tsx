@@ -4,8 +4,8 @@ import { getRandomColor } from "@/lib/utils";
 import { TodoItem } from "@/types/todo";
 import { DialogTrigger } from "@radix-ui/react-dialog";
 import { useState } from "react";
-import TodoUpdateDialog from "./TodoUpdateDialog";
-import { Dialog } from "./ui/dialog";
+import { Dialog } from "../../ui/dialog";
+import TodoUpdateDialog from "../TodoUpdateDialog";
 
 interface DayCalendarTodoBoxProps {
   todo: TodoItem;
@@ -34,7 +34,7 @@ export default function DayCalendarTodoBox({
             height: todo.allDay ? "100%" : `${position.height}%`,
             width: `${position.width}px`, // 고정된 너비
             left: `${150 + position.left}px`, // 계산된 left 값
-            backgroundColor: getRandomColor(),
+            backgroundColor: todo.done ? "rgba(0,0,0,0.1)" : getRandomColor(),
           }}
         >
           <span>{todo.content}</span>

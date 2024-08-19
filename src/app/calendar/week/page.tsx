@@ -1,6 +1,6 @@
 import { getTodoByWeek } from "@/apis/repository/todo.repository";
-import WeekCalendarTimeControlsSection from "@/components/WeekCalendarTimeControlSection";
-import WeekCalendarWeekDayBox from "@/components/WeekCalendarWeekDayBox";
+import WeekCalendarTimeControlsSection from "@/components/calendar/week/WeekCalendarTimeControlSection";
+import WeekCalendarWeekDayBox from "@/components/calendar/week/WeekCalendarWeekDayBox";
 import { getStartOfWeek } from "@/lib/utils";
 import { TodoItem } from "@/types/todo";
 import { format } from "date-fns";

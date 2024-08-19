@@ -1,9 +1,9 @@
 import { UserInfo } from "@/types/auth";
 import Link from "next/link";
-import LoginModal from "../LoginModal";
-import UserAccountNav from "../UserAccountNav";
 import { Button } from "../ui/button";
 import { Dialog, DialogTrigger } from "../ui/dialog";
+import LoginModal from "./LoginModal";
+import UserAccountNav from "./UserAccountNav";
 
 export default function Header({ userInfo }: { userInfo?: UserInfo | null }) {
   return (

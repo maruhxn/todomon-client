@@ -4,9 +4,9 @@ import { getRandomColor } from "@/lib/utils";
 import { TodoItem } from "@/types/todo";
 import { DialogTrigger } from "@radix-ui/react-dialog";
 import { useState } from "react";
-import TodoUpdateDialog from "./TodoUpdateDialog";
-import { Badge } from "./ui/badge";
-import { Dialog } from "./ui/dialog";
+import { Badge } from "../../ui/badge";
+import { Dialog } from "../../ui/dialog";
+import TodoUpdateDialog from "../TodoUpdateDialog";
 
 interface WeekCalendarAllDayTodoBadgeProps {
   allDayTodo: TodoItem;

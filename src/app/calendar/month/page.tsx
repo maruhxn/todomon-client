@@ -1,17 +1,11 @@
-import MonthlyCalendar from "@/components/MonthlyCalendar";
+import MonthlyCalendar from "@/components/calendar/month/MonthlyCalendar";
 import { Button } from "@/components/ui/button";
 import { addMonths, format, startOfMonth, subMonths } from "date-fns";
 import Link from "next/link";
 
 import { getTodoByMonth } from "@/apis/repository/todo.repository";
 import { formatKoreanDate, parseYearMonth } from "@/lib/utils";
-import {
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  LayoutGridIcon,
-  ListIcon,
-  SettingsIcon,
-} from "lucide-react";
+import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 
 interface MonthCalendarSearchParams {
   yearMonth?: string;
@@ -56,17 +50,6 @@ export default async function MonthCalendarPage({
                 <ChevronRightIcon className="w-5 h-5" />
               </Button>
             </Link>
-          </div>
-          <div className="flex items-center gap-2">
-            <Button variant="ghost" size="icon">
-              <ListIcon className="w-5 h-5" />
-            </Button>
-            <Button variant="ghost" size="icon">
-              <LayoutGridIcon className="w-5 h-5" />
-            </Button>
-            <Button variant="ghost" size="icon">
-              <SettingsIcon className="w-5 h-5" />
-            </Button>
           </div>
         </div>
         <MonthlyCalendar date={date} todos={data} />

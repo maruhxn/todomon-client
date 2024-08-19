@@ -1,6 +1,6 @@
 import { getISOString } from "@/lib/utils";
 import { TodoItem } from "@/types/todo";
-import AddTodoButton from "./AddTodoBtn";
+import AddTodoButton from "../AddTodoBtn";
 import WeekCalendarAllDayTodoBadge from "./WeekCalendarAllDayTodoBadge";
 import WeekCalendarNonAllDayTodoBox from "./WeekCalendarNonAllDayTodoBox";
 

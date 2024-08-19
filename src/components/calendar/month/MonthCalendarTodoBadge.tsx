@@ -4,9 +4,9 @@ import { getRandomColor } from "@/lib/utils";
 
 import { TodoItem } from "@/types/todo";
 import { useState } from "react";
-import TodoUpdateDialog from "./TodoUpdateDialog";
-import { Badge } from "./ui/badge";
-import { Dialog, DialogTrigger } from "./ui/dialog";
+import { Badge } from "../../ui/badge";
+import { Dialog, DialogTrigger } from "../../ui/dialog";
+import TodoUpdateDialog from "../TodoUpdateDialog";
 
 interface MonthCalendarTodoBadgeProps {
   todo: TodoItem;

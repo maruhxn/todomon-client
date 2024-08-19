@@ -1,8 +1,10 @@
 "use client";
 
 import {
-  CreateTodoRequest,
-  CreateTodoValidator,
+  UpdateAndDeleteTodoQueryParams,
+  UpdateTodoRequest,
+  UpdateTodoStatusRequest,
+  UpdateTodoValidator,
 } from "@/apis/validators/todo.validator";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -22,17 +24,31 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import { createTodoRequest } from "@/apis/repository/todo.repository";
+import {
+  deleteTodoRequest,
+  updateTodoRequest,
+  updateTodoStatusRequest,
+} from "@/apis/repository/todo.repository";
 import { useToast } from "@/hooks/use-toast";
-import { cn, getDateFromTimeString, getISOString } from "@/lib/utils";
-import { FREQUENCY } from "@/types/time";
+import {
+  cn,
+  getDateFromTimeString,
+  getISOString,
+  getRepeatInfoText,
+} from "@/lib/utils";
+import { TodoItem, UpdateAndDeleteTodoTargetType } from "@/types/todo";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { addHours, format } from "date-fns";
+import { format } from "date-fns";
 import { ko } from "date-fns/locale";
-import { AlignJustifyIcon, CalendarIcon, ClockIcon } from "lucide-react";
+import {
+  AlignJustifyIcon,
+  CalendarIcon,
+  ClockIcon,
+  RepeatIcon,
+} from "lucide-react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { Calendar } from "./ui/calendar";
+import { Calendar } from "../ui/calendar";
 import {
   Form,
   FormControl,
@@ -40,41 +56,45 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "./ui/form";
-import { Label } from "./ui/label";
-import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
-import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
-import { Separator } from "./ui/separator";
+} from "../ui/form";
+import { Label } from "../ui/label";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
+import { Separator } from "../ui/separator";
+import SelectTargetTypeRadioGroup from "./SelectTargetTypeDialog";
 
-interface AddTodoDialogProps {
-  date: Date;
+interface TodoUpdateDialogProps {
+  todo: TodoItem;
   openControlFn: any;
 }
 
-export default function AddTodoDialog({
-  date,
+export default function TodoUpdateDialog({
+  todo,
   openControlFn,
-}: AddTodoDialogProps) {
-  const current = new Date();
-  const { toast } = useToast();
-  const [frequency, setFrequency] = useState<FREQUENCY>("DAILY");
-  const [repeatExitType, setRepeatExitType] = useState<string>("one");
-  const [isRepeated, setIsRepeated] = useState(false);
+}: TodoUpdateDialogProps) {
+  const date = new Date(todo.startAt);
+  const isInstance = todo.parentId ? true : false;
 
-  const form = useForm<CreateTodoRequest>({
-    resolver: zodResolver(CreateTodoValidator),
+  const { toast } = useToast();
+  const [frequency, setFrequency] = useState<string | null>("DAILY");
+  const [repeatExitType, setRepeatExitType] = useState<string>("one");
+  const [isRepeatInfoUpdating, setIsRepeatInfoUpdating] =
+    useState<boolean>(false);
+  const [isTimeModifiable, setIsTimeModifiable] = useState(true);
+  const [targetType, setTargetType] =
+    useState<UpdateAndDeleteTodoTargetType>("THIS_TASK");
+
+  const form = useForm<UpdateTodoRequest>({
+    resolver: zodResolver(UpdateTodoValidator),
     defaultValues: {
-      content: "",
-      startAt: format(current, "HH:mm"),
-      endAt: format(addHours(current, 1), "HH:mm"),
-      isAllDay: false,
+      content: todo.content,
+      startAt: format(date, "HH:mm"),
+      endAt: format(new Date(todo.endAt), "HH:mm"),
+      isAllDay: todo.allDay,
       repeatInfoReqItem: {
         interval: 1,
-        frequency: "DAILY",
-        byDay: null,
-        byMonthDay: null,
-        count: undefined,
         until: date,
+        frequency: "DAILY",
       },
     },
   });
@@ -95,7 +115,7 @@ export default function AddTodoDialog({
   useEffect(() => {
     if (repeatExitType === "one") {
       form.setValue("repeatInfoReqItem.until", date);
-      form.setValue("repeatInfoReqItem.count", undefined);
+      form.setValue("repeatInfoReqItem.count", null);
     } else {
       form.setValue("repeatInfoReqItem.until", null);
       form.setValue("repeatInfoReqItem.count", 1);
@@ -103,25 +123,37 @@ export default function AddTodoDialog({
   }, [repeatExitType]);
 
   useEffect(() => {
+    if (targetType === "THIS_TASK") {
+      form.setValue("startAt", format(date, "HH:mm"));
+      form.setValue("endAt", format(new Date(todo.endAt), "HH:mm"));
+      setIsTimeModifiable(true);
+    } else {
+      form.setValue("startAt", null);
+      form.setValue("endAt", null);
+      setIsTimeModifiable(false);
+    }
+  }, [targetType]);
+
+  useEffect(() => {
     if (Object.keys(form.formState.errors).length !== 0) {
       console.log(form.formState.errors);
     }
   }, [form.formState.errors]);
 
-  async function createTodo({
+  async function updateTodo({
     content,
     startAt,
     endAt,
     isAllDay,
     repeatInfoReqItem,
-  }: CreateTodoRequest) {
+  }: UpdateTodoRequest) {
     try {
       const payload = {
         content,
-        startAt: getDateFromTimeString(date, startAt),
-        endAt: getDateFromTimeString(date, endAt),
+        startAt: startAt && getDateFromTimeString(date, startAt),
+        endAt: endAt && getDateFromTimeString(date, endAt),
         isAllDay,
-        repeatInfoReqItem: isRepeated
+        repeatInfoReqItem: isRepeatInfoUpdating
           ? repeatInfoReqItem
             ? {
                 frequency: repeatInfoReqItem.frequency,
@@ -141,19 +173,24 @@ export default function AddTodoDialog({
           : null,
       };
 
-      await createTodoRequest(payload as CreateTodoRequest);
+      const queryParameter = {
+        isInstance,
+        targetType,
+      } as UpdateAndDeleteTodoQueryParams;
+
+      await updateTodoRequest(
+        todo.todoId,
+        payload as UpdateTodoRequest,
+        queryParameter
+      );
 
       openControlFn(false);
 
       form.reset();
 
-      setFrequency("DAILY");
-      setIsRepeated(false);
-      setRepeatExitType("one");
-
       toast({
         title: "성공",
-        description: "투두 생성에 성공했습니다",
+        description: "투두 수정에 성공했습니다",
       });
     } catch (error: any) {
       return toast({
@@ -164,14 +201,71 @@ export default function AddTodoDialog({
     }
   }
 
+  async function updateStatus() {
+    try {
+      const payload: UpdateTodoStatusRequest = {
+        isDone: !todo.done,
+      };
+
+      await updateTodoStatusRequest(todo.todoId, payload, isInstance);
+
+      openControlFn(false);
+
+      form.reset();
+
+      toast({
+        title: "성공",
+        description: "투두 상태 업데이트에 성공했습니다",
+      });
+    } catch (error: any) {
+      return toast({
+        title: "실패",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  }
+
+  async function deleteTodo() {
+    try {
+      const queryParameter = {
+        isInstance,
+        targetType,
+      } as UpdateAndDeleteTodoQueryParams;
+
+      await deleteTodoRequest(todo.todoId, queryParameter);
+
+      openControlFn(false);
+
+      form.reset();
+
+      toast({
+        title: "성공",
+        description: "투두 삭제에 성공했습니다",
+      });
+    } catch (error: any) {
+      console.error(error);
+      return toast({
+        title: "실패",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  }
+  useEffect(() => {
+    if (isRepeatInfoUpdating && todo.repeatInfoItem) {
+      setTargetType("ALL_TASKS");
+    }
+  }, [isRepeatInfoUpdating]);
+
   return (
     <DialogContent className="sm:max-w-[425px]">
       <DialogHeader>
-        <DialogTitle>투두 생성</DialogTitle>
+        <DialogTitle>투두 수정</DialogTitle>
       </DialogHeader>
       <Form {...form}>
         <form
-          onSubmit={form.handleSubmit(createTodo)}
+          onSubmit={form.handleSubmit(updateTodo)}
           className="flex flex-col space-y-4"
         >
           <FormField
@@ -184,82 +278,97 @@ export default function AddTodoDialog({
                     <AlignJustifyIcon className="size-5 text-muted-foreground" />
                   </FormLabel>
                   <FormControl>
-                    <Input className="w-full" placeholder="내용" {...field} />
+                    <Input
+                      className="w-full"
+                      {...field}
+                      value={field.value ?? ""}
+                    />
                   </FormControl>
                 </div>
                 <FormMessage />
               </FormItem>
             )}
           />
-          <div className="flex space-x-4">
+          <div className="flex items-center space-x-4">
             <ClockIcon className="size-5 text-muted-foreground" />
-            <div className="flex flex-col justify-center space-y-3">
-              <div className="flex items-center space-x-2">
-                <FormField
-                  control={form.control}
-                  name="startAt"
-                  render={({ field }) => (
-                    <FormItem>
-                      <div>
-                        <FormControl>
-                          <Input {...field} />
-                        </FormControl>
-                      </div>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <span>~</span>
-                <FormField
-                  control={form.control}
-                  name="endAt"
-                  render={({ field }) => (
-                    <FormItem>
-                      <div>
-                        <FormControl>
-                          <Input {...field} />
-                        </FormControl>
-                      </div>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-
+            <div className="flex items-center space-x-2">
               <FormField
                 control={form.control}
-                name="isAllDay"
+                name="startAt"
                 render={({ field }) => (
-                  <FormItem className="flex items-center space-x-2">
-                    <FormLabel>종일</FormLabel>
-                    <div className="flex items-center">
-                      <FormControl>
-                        <Checkbox
-                          checked={field.value}
-                          onCheckedChange={field.onChange}
-                        />
-                      </FormControl>
-                    </div>
+                  <FormItem className="space-y-0">
+                    <FormControl>
+                      <Input
+                        disabled={!isTimeModifiable}
+                        {...field}
+                        value={field.value ?? ""}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <span>~</span>
+              <FormField
+                control={form.control}
+                name="endAt"
+                render={({ field }) => (
+                  <FormItem className="space-y-0">
+                    <FormControl>
+                      <Input
+                        disabled={!isTimeModifiable}
+                        {...field}
+                        value={field.value ?? ""}
+                      />
+                    </FormControl>
+                    <FormMessage />
                   </FormItem>
                 )}
               />
             </div>
-          </div>
-
-          <div className="flex items-center space-x-2">
-            <Label>반복 설정</Label>
-            <Checkbox
-              checked={isRepeated}
-              onCheckedChange={(checked) =>
-                setIsRepeated(checked ? true : false)
-              }
+            <FormField
+              control={form.control}
+              name="isAllDay"
+              render={({ field }) => (
+                <FormItem className="flex items-center space-x-2 space-y-0">
+                  <FormControl>
+                    <Checkbox
+                      checked={field.value ?? false}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                  <FormLabel className="w-8">종일</FormLabel>
+                </FormItem>
+              )}
             />
           </div>
 
-          {isRepeated && (
+          {todo.repeatInfoItem ? (
+            <div
+              onClick={() => setIsRepeatInfoUpdating((prev) => !prev)}
+              className="flex items-center space-x-4 cursor-pointer rounded-sm hover:ring-2 hover:ring-offset-4 hover:ring-black/60"
+            >
+              <RepeatIcon className="size-4 text-muted-foreground"></RepeatIcon>
+              <span className="text-muted-foreground text-sm font-bold">
+                {getRepeatInfoText(todo.repeatInfoItem)}
+              </span>
+            </div>
+          ) : (
+            <div className="flex items-center space-x-2">
+              <Label>반복 설정</Label>
+              <Checkbox
+                checked={isRepeatInfoUpdating}
+                onCheckedChange={(checked) =>
+                  setIsRepeatInfoUpdating(checked ? true : false)
+                }
+              />
+            </div>
+          )}
+
+          {isRepeatInfoUpdating && (
             <>
               <Separator />
-              <h3 className="font-bold">반복 설정</h3>
+              <h3 className="font-bold">반복 정보 수정</h3>
               <div className="flex items-center space-x-2">
                 <Label className="text-muted-foreground break-keep">주기</Label>
                 <FormField
@@ -273,6 +382,7 @@ export default function AddTodoDialog({
                           type="number"
                           className="w-24 text-center bg-zinc-100"
                           {...field}
+                          value={field.value ?? 1}
                         />
                       </FormControl>
                     </FormItem>
@@ -287,7 +397,7 @@ export default function AddTodoDialog({
                       value={field.value || "DAILY"}
                       onValueChange={(value) => {
                         field.onChange(value);
-                        setFrequency(value as FREQUENCY);
+                        setFrequency(value);
                       }}
                     >
                       <FormControl>
@@ -458,6 +568,7 @@ export default function AddTodoDialog({
                             type="number"
                             className="w-24 text-center bg-zinc-100"
                             {...field}
+                            value={field.value ?? 1}
                           />
                         </FormControl>
                         <span>회 반복</span>
@@ -470,13 +581,47 @@ export default function AddTodoDialog({
             </>
           )}
 
+          {todo.repeatInfoItem && (
+            <>
+              <Separator />
+              <SelectTargetTypeRadioGroup
+                targetType={targetType}
+                setTargetType={setTargetType}
+              />
+            </>
+          )}
+
           <DialogFooter>
-            <Button type="submit">저장</Button>
-            <DialogClose asChild>
-              <Button type="button" variant="secondary">
-                닫기
-              </Button>
-            </DialogClose>
+            <div className="w-full flex justify-between items-center">
+              <div className="space-x-2">
+                <Button
+                  onClick={updateStatus}
+                  type="button"
+                  variant="secondary"
+                >
+                  {todo.done ? "완료 취소" : "완료"}
+                </Button>
+                <Button
+                  onClick={deleteTodo}
+                  type="button"
+                  variant="destructive"
+                >
+                  삭제
+                </Button>
+              </div>
+              <div className="space-x-2">
+                <Button type="submit">저장</Button>
+                <DialogClose asChild>
+                  <Button
+                    onClick={() => form.reset()}
+                    type="button"
+                    variant="secondary"
+                  >
+                    닫기
+                  </Button>
+                </DialogClose>
+              </div>
+            </div>
           </DialogFooter>
         </form>
       </Form>

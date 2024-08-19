@@ -1,7 +1,7 @@
 import { getProfileImage } from "@/lib/utils";
 import { UserInfo } from "@/types/auth";
 import { UserIcon } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 
 export default function ProfileIcon({ userInfo }: { userInfo: UserInfo }) {
   return (

@@ -30,21 +30,6 @@ export default function UserAccountNav({ userInfo }: { userInfo: UserInfo }) {
           </div>
         </div>
         <DropdownMenuSeparator />
-        {/* <DropdownMenuItemIndicator className="cursor-pointer" asChild>
-            <Link href="/profile">Profile</Link>
-          </DropdownMenuItemIndicator> */}
-
-        {/* {userInfo.role === "ROLE_ADMIN" && (
-            <DropdownMenuItem className="cursor-pointer" asChild>
-              <DialogTrigger asChild>
-                <div>카테고리 생성</div>
-              </DialogTrigger>
-            </DropdownMenuItem>
-          )} */}
-
-        {/* <DropdownMenuItem className="cursor-pointer" asChild>
-            <Link href="/topics/create">토픽 생성</Link>
-          </DropdownMenuItem> */}
 
         <DropdownMenuItem className="cursor-pointer" asChild>
           <Link href="/members/profile/my">프로필</Link>

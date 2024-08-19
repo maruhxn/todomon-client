@@ -3,7 +3,7 @@ import { areDatesEqual, cn } from "@/lib/utils";
 import { WeekDay } from "@/types/time";
 import { TodoItem } from "@/types/todo";
 import { format } from "date-fns";
-import AddTodoButton from "./AddTodoBtn";
+import AddTodoButton from "../AddTodoBtn";
 import MonthCalendarTodoBadge from "./MonthCalendarTodoBadge";
 
 interface MonthCalendarDayBoxProps {

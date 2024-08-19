@@ -1,6 +1,4 @@
-import { cn } from "@/lib/utils";
-import { CalendarIcon } from "lucide-react";
-import Link from "next/link";
+import CalendarNavTab from "@/components/calendar/CalendarNavTab";
 
 export default function CalendarLayout({
   children,
@@ -9,8 +7,9 @@ export default function CalendarLayout({
 }) {
   return (
     <div className="overflow-x-auto scrollbar-hide">
-      <div className="flex h-screen w-full">
-        <aside className="hidden lg:flex flex-col items-start bg-background px-12 py-6 border-r">
+      <div className="flex flex-col min-h-screen w-full pb-20">
+        <CalendarNavTab />
+        {/* <aside className="hidden lg:flex flex-col items-start bg-background px-12 py-6 border-r">
           <div className="flex items-center justify-between w-full mb-6">
             <h2 className="text-2xl font-bold">Calendar</h2>
           </div>
@@ -29,7 +28,7 @@ export default function CalendarLayout({
               </Link>
             ))}
           </nav>
-        </aside>
+        </aside> */}
         {children}
       </div>
     </div>

@@ -2,7 +2,7 @@ import { areDatesEqual, cn } from "@/lib/utils";
 import { addDays, format, subDays } from "date-fns";
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import Link from "next/link";
-import { Button } from "./ui/button";
+import { Button } from "../../ui/button";
 
 interface DayCalendarTimControlSectionProps {
   date: Date;

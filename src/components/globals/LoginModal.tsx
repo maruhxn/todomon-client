@@ -6,8 +6,8 @@ import {
 } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
+import { buttonVariants } from "../ui/button";
 import { Icons } from "./Icons";
-import { buttonVariants } from "./ui/button";
 
 /* OAUTH2 */
 export const GOOGLE_LOGIN_URL = `${process.env.NEXT_PUBLIC_API_URL}/oauth2/authorization/google`;

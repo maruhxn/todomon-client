@@ -1,8 +1,8 @@
 "use client";
 
 import { UpdateAndDeleteTodoTargetType } from "@/types/todo";
-import { Label } from "./ui/label";
-import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
+import { Label } from "../ui/label";
+import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
 
 interface SelectTargetTypeRadioGroupProps {
   targetType: UpdateAndDeleteTodoTargetType;

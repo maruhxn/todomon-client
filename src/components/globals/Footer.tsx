@@ -8,7 +8,7 @@ import Link from "next/link";
 
 export default function Footer() {
   return (
-    <nav className="fixed w-screen bottom-0 h-20 border-t-2 py-2 flex justify-around items-center">
+    <nav className="fixed z-40 bg-white w-screen bottom-0 h-20 border-t-2 py-2 flex justify-around items-center">
       <Link
         href="/calendar/month"
         className="flex justify-center items-center space-x-2 px-8 py-4 hover:bg-slate-400 rounded-lg cursor-pointer"
