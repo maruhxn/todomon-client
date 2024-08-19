@@ -1,7 +1,6 @@
 "use client";
 
-import { getRandomColor } from "@/lib/utils";
-
+import { cn } from "@/lib/utils";
 import { TodoItem } from "@/types/todo";
 import { useState } from "react";
 import { Badge } from "../../ui/badge";
@@ -25,10 +24,10 @@ export default function MonthCalendarTodoBadge({
     >
       <DialogTrigger>
         <Badge
+          className={cn("z-10 w-full", todo.done && "opacity-30")}
           style={{
-            backgroundColor: todo.done ? "rgba(0,0,0,0.1)" : getRandomColor(),
+            backgroundColor: todo.color,
           }}
-          className="z-10 w-full"
         >
           {todo.content}
         </Badge>

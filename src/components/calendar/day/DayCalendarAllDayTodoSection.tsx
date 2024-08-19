@@ -1,6 +1,6 @@
 "use client";
 
-import { getRandomColor } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import { TodoItem } from "@/types/todo";
 import { useState } from "react";
 import { Dialog, DialogTrigger } from "../../ui/dialog";
@@ -20,11 +20,12 @@ export default function DayCalendarAllDayTodoBox({
       <DialogTrigger asChild>
         <div
           key={allDayTodo.todoId}
-          className="w-full text-white pl-10 py-1 rounded-md cursor-pointer hover:scale-y-105"
+          className={cn(
+            "w-full text-white pl-10 py-1 rounded-md cursor-pointer hover:scale-y-105",
+            allDayTodo.done && "opacity-30"
+          )}
           style={{
-            backgroundColor: allDayTodo.done
-              ? "rgba(0,0,0,0.1)"
-              : getRandomColor(),
+            backgroundColor: allDayTodo.color,
           }}
         >
           {allDayTodo.content}

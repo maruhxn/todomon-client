@@ -4,6 +4,7 @@ export interface TodoItem {
   content: string;
   allDay: boolean;
   done: boolean;
+  color: string;
   startAt: string;
   endAt: string;
   repeatInfoItem: RepeatInfoItem;

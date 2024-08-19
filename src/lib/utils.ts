@@ -25,26 +25,26 @@ export function getProfileImage(profileImageUrl: string) {
     : `${process.env.S3_PUBLIC_ENDPOINT}/${profileImageUrl}`;
 }
 
-export function getRandomColor(): string {
-  const letters = "0123456789ABCDEF";
-  let color: string;
-  const getBrightness = (color: string): number => {
-    const r = parseInt(color.substring(1, 3), 16);
-    const g = parseInt(color.substring(3, 5), 16);
-    const b = parseInt(color.substring(5, 7), 16);
-    return (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255;
-  };
+// export function getRandomColor(): string {
+//   const letters = "0123456789ABCDEF";
+//   let color: string;
+//   const getBrightness = (color: string): number => {
+//     const r = parseInt(color.substring(1, 3), 16);
+//     const g = parseInt(color.substring(3, 5), 16);
+//     const b = parseInt(color.substring(5, 7), 16);
+//     return (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255;
+//   };
 
-  // 색상 생성 및 검증 반복
-  do {
-    color = "#";
-    for (let i = 0; i < 6; i++) {
-      color += letters[Math.floor(Math.random() * 16)];
-    }
-  } while (getBrightness(color) > 0.7); // 밝기 임계값 (0~1 범위, 낮을수록 어두운 색상)
+//   // 색상 생성 및 검증 반복
+//   do {
+//     color = "#";
+//     for (let i = 0; i < 6; i++) {
+//       color += letters[Math.floor(Math.random() * 16)];
+//     }
+//   } while (getBrightness(color) > 0.7); // 밝기 임계값 (0~1 범위, 낮을수록 어두운 색상)
 
-  return color;
-}
+//   return color;
+// }
 
 export function formatKoreanDate(date: Date): string {
   const year = format(date, "yyyy", { locale: ko });

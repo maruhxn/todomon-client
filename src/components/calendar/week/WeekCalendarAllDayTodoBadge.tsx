@@ -1,6 +1,6 @@
 "use client";
 
-import { getRandomColor } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import { TodoItem } from "@/types/todo";
 import { DialogTrigger } from "@radix-ui/react-dialog";
 import { useState } from "react";
@@ -21,11 +21,12 @@ export default function WeekCalendarAllDayTodoBadge({
     <Dialog open={updateDialogOpen} onOpenChange={setUpdateDialogOpen}>
       <DialogTrigger asChild>
         <Badge
-          className="w-full cursor-pointer hover:scale-y-105"
+          className={cn(
+            "w-full cursor-pointer hover:scale-y-105",
+            allDayTodo.done && "opacity-30"
+          )}
           style={{
-            backgroundColor: allDayTodo.done
-              ? "rgba(0,0,0,0.1)"
-              : getRandomColor(),
+            backgroundColor: allDayTodo.color,
           }}
         >
           {allDayTodo.content}

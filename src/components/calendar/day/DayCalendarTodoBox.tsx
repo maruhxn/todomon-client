@@ -1,6 +1,6 @@
 "use client";
 
-import { getRandomColor } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import { TodoItem } from "@/types/todo";
 import { DialogTrigger } from "@radix-ui/react-dialog";
 import { useState } from "react";
@@ -28,13 +28,16 @@ export default function DayCalendarTodoBox({
       <DialogTrigger asChild>
         <div
           key={todo.todoId}
-          className="absolute bg-primary text-primary-foreground rounded-md p-2 flex justify-center items-center cursor-pointer hover:scale-y-105"
+          className={cn(
+            "absolute bg-primary text-primary-foreground rounded-md p-2 flex justify-center items-center cursor-pointer hover:scale-y-105",
+            todo.done && "opacity-30"
+          )}
           style={{
             top: `${position.top}%`,
             height: todo.allDay ? "100%" : `${position.height}%`,
             width: `${position.width}px`, // 고정된 너비
             left: `${150 + position.left}px`, // 계산된 left 값
-            backgroundColor: todo.done ? "rgba(0,0,0,0.1)" : getRandomColor(),
+            backgroundColor: todo.color,
           }}
         >
           <span>{todo.content}</span>

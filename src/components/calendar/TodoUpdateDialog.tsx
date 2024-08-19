@@ -47,6 +47,7 @@ import {
   RepeatIcon,
 } from "lucide-react";
 import { useEffect, useState } from "react";
+import { HexColorInput, HexColorPicker } from "react-colorful";
 import { useForm } from "react-hook-form";
 import { Calendar } from "../ui/calendar";
 import {
@@ -91,10 +92,14 @@ export default function TodoUpdateDialog({
       startAt: format(date, "HH:mm"),
       endAt: format(new Date(todo.endAt), "HH:mm"),
       isAllDay: todo.allDay,
+      color: todo.color,
       repeatInfoReqItem: {
         interval: 1,
-        until: date,
         frequency: "DAILY",
+        byDay: null,
+        byMonthDay: null,
+        count: undefined,
+        until: date,
       },
     },
   });
@@ -115,7 +120,7 @@ export default function TodoUpdateDialog({
   useEffect(() => {
     if (repeatExitType === "one") {
       form.setValue("repeatInfoReqItem.until", date);
-      form.setValue("repeatInfoReqItem.count", null);
+      form.setValue("repeatInfoReqItem.count", undefined);
     } else {
       form.setValue("repeatInfoReqItem.until", null);
       form.setValue("repeatInfoReqItem.count", 1);
@@ -145,6 +150,7 @@ export default function TodoUpdateDialog({
     startAt,
     endAt,
     isAllDay,
+    color,
     repeatInfoReqItem,
   }: UpdateTodoRequest) {
     try {
@@ -153,6 +159,7 @@ export default function TodoUpdateDialog({
         startAt: startAt && getDateFromTimeString(date, startAt),
         endAt: endAt && getDateFromTimeString(date, endAt),
         isAllDay,
+        color,
         repeatInfoReqItem: isRepeatInfoUpdating
           ? repeatInfoReqItem
             ? {
@@ -342,6 +349,33 @@ export default function TodoUpdateDialog({
               )}
             />
           </div>
+
+          <FormField
+            control={form.control}
+            name="color"
+            render={({ field }) => (
+              <FormItem className="flex items-center space-x-2">
+                <FormLabel>색깔</FormLabel>
+                <div className="flex flex-1 justify-center items-center">
+                  <FormControl>
+                    <div className="flex flex-col space-y-2">
+                      <HexColorPicker
+                        color={field.value ?? todo.color}
+                        onChange={field.onChange}
+                      />
+                      <HexColorInput
+                        className="font-bold text-sm text-center"
+                        color={field.value ?? todo.color}
+                        onChange={field.onChange}
+                        placeholder="6자리 HEX 코드를 입력하세요."
+                        prefixed
+                      />
+                    </div>
+                  </FormControl>
+                </div>
+              </FormItem>
+            )}
+          />
 
           {todo.repeatInfoItem ? (
             <div

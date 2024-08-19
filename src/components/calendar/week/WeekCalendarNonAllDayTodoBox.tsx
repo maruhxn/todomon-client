@@ -1,6 +1,6 @@
 "use client";
 
-import { getRandomColor } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import { TodoItem } from "@/types/todo";
 import { DialogTrigger } from "@radix-ui/react-dialog";
 import { useState } from "react";
@@ -41,10 +41,13 @@ export default function WeekCalendarNonAllDayTodoBox({
     <Dialog open={updateDialogOpen} onOpenChange={setUpdateDialogOpen}>
       <DialogTrigger asChild>
         <div
+          className={cn(
+            "flex flex-col rounded-md bg-accent p-2 text-sm text-accent-foreground space-y-1 text-white cursor-pointer hover:scale-y-105",
+            todo.done && "opacity-30"
+          )}
           style={{
-            backgroundColor: todo.done ? "rgba(0,0,0,0.1)" : getRandomColor(),
+            backgroundColor: todo.color,
           }}
-          className="flex flex-col rounded-md bg-accent p-2 text-sm text-accent-foreground space-y-1 text-white cursor-pointer hover:scale-y-105"
         >
           <span>{formatTimeRange(todo.startAt, todo.endAt)}</span>
           <span className="font-bold">{todo.content}</span>

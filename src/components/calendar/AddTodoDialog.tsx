@@ -31,6 +31,7 @@ import { addHours, format } from "date-fns";
 import { ko } from "date-fns/locale";
 import { AlignJustifyIcon, CalendarIcon, ClockIcon } from "lucide-react";
 import { useEffect, useState } from "react";
+import { HexColorInput, HexColorPicker } from "react-colorful";
 import { useForm } from "react-hook-form";
 import { Calendar } from "../ui/calendar";
 import {
@@ -68,6 +69,7 @@ export default function AddTodoDialog({
       startAt: format(current, "HH:mm"),
       endAt: format(addHours(current, 1), "HH:mm"),
       isAllDay: false,
+      color: "#ffffff",
       repeatInfoReqItem: {
         interval: 1,
         frequency: "DAILY",
@@ -113,6 +115,7 @@ export default function AddTodoDialog({
     startAt,
     endAt,
     isAllDay,
+    color,
     repeatInfoReqItem,
   }: CreateTodoRequest) {
     try {
@@ -121,6 +124,7 @@ export default function AddTodoDialog({
         startAt: getDateFromTimeString(date, startAt),
         endAt: getDateFromTimeString(date, endAt),
         isAllDay,
+        color,
         repeatInfoReqItem: isRepeated
           ? repeatInfoReqItem
             ? {
@@ -245,6 +249,33 @@ export default function AddTodoDialog({
               />
             </div>
           </div>
+
+          <FormField
+            control={form.control}
+            name="color"
+            render={({ field }) => (
+              <FormItem className="flex items-center space-x-2">
+                <FormLabel>색깔</FormLabel>
+                <div className="flex flex-1 justify-center items-center">
+                  <FormControl>
+                    <div className="flex flex-col space-y-2">
+                      <HexColorPicker
+                        color={field.value}
+                        onChange={field.onChange}
+                      />
+                      <HexColorInput
+                        className="font-bold text-sm text-center"
+                        color={field.value}
+                        onChange={field.onChange}
+                        placeholder="6자리 HEX 코드를 입력하세요."
+                        prefixed
+                      />
+                    </div>
+                  </FormControl>
+                </div>
+              </FormItem>
+            )}
+          />
 
           <div className="flex items-center space-x-2">
             <Label>반복 설정</Label>
@@ -473,7 +504,11 @@ export default function AddTodoDialog({
           <DialogFooter>
             <Button type="submit">저장</Button>
             <DialogClose asChild>
-              <Button type="button" variant="secondary">
+              <Button
+                onClick={() => form.reset()}
+                type="button"
+                variant="secondary"
+              >
                 닫기
               </Button>
             </DialogClose>

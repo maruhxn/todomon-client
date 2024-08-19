@@ -22,6 +22,9 @@ export const CreateTodoValidator = z.object({
     })
     .min(1, "종료 시간을 입력해주세요."),
   isAllDay: z.boolean(),
+  color: z.string().regex(/^#([0-9A-Fa-f]{6}|[0-9A-Fa-f]{3})$/, {
+    message: "색의 형식이 올바르지 않습니다.",
+  }),
   repeatInfoReqItem: z
     .object({
       frequency: z.enum(frequencyEnumValues, {
@@ -49,6 +52,12 @@ export const UpdateTodoValidator = z.object({
   startAt: z.string().min(1, "시작 시간을 입력해주세요.").nullable(),
   endAt: z.string().min(1, "종료 시간을 입력해주세요.").nullable(),
   isAllDay: z.boolean().nullable(),
+  color: z
+    .string()
+    .regex(/^#([0-9A-Fa-f]{6}|[0-9A-Fa-f]{3})$/, {
+      message: "색의 형식이 올바르지 않습니다.",
+    })
+    .nullable(),
   repeatInfoReqItem: z
     .object({
       frequency: z.enum(frequencyEnumValues).nullable(),
@@ -56,7 +65,7 @@ export const UpdateTodoValidator = z.object({
       byDay: z.array(z.string()).min(1).nullable(),
       byMonthDay: z.date().nullable(),
       until: z.date().nullable(),
-      count: z.coerce.number().min(2, "최소 반복 횟수는 2번입니다.").nullable(),
+      count: z.coerce.number().min(2, "최소 반복 횟수는 2번입니다.").optional(),
     })
     .nullable(),
 });
