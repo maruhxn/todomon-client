@@ -34,7 +34,11 @@ export default async function RootLayout({
   return (
     <html lang="ko">
       <body
-        className={cn("antialiased", fontHeading.variable, fontBody.variable)}
+        className={cn(
+          "antialiased pb-20",
+          fontHeading.variable,
+          fontBody.variable
+        )}
       >
         <Header userInfo={userInfo} />
         {children}

@@ -31,7 +31,7 @@ export default function Footer() {
         <span className="text-sm font-bold">PET</span>
       </Link>
       <Link
-        href="/calendar"
+        href="/social"
         className="flex justify-center items-center space-x-2 px-8 py-4 hover:bg-slate-400 rounded-lg cursor-pointer"
       >
         <UsersRoundIcon className="size-6" />

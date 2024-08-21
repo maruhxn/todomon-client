@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { setAuthCookieFromQueryParameters } from "./actions";
 
 interface OAuth2SearchParam {
-  username: string;
+  memberId: string;
   accessToken: string;
   refreshToken: string;
 }
@@ -16,6 +16,7 @@ export default function AuthPage({
 }) {
   useEffect(() => {
     setAuthCookieFromQueryParameters(
+      searchParams.memberId,
       searchParams.accessToken,
       searchParams.refreshToken
     );

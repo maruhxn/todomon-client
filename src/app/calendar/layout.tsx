@@ -7,7 +7,7 @@ export default function CalendarLayout({
 }) {
   return (
     <div className="overflow-x-auto scrollbar-hide">
-      <div className="flex flex-col min-h-screen w-full pb-20">
+      <div className="flex flex-col min-h-screen w-full">
         <CalendarNavTab />
         {children}
       </div>

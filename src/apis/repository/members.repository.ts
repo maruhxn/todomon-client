@@ -5,7 +5,7 @@ import {
   REFRESH_TOKEN_COOKIE_NAME,
 } from "@/lib/constants";
 import { TAG_PROFILE } from "@/lib/tags";
-import { ProfileDto } from "@/types/profile";
+import { ProfileDto, SearchDto } from "@/types/profile";
 import { ResponseDto } from "@/types/response.dto";
 import { revalidateTag } from "next/cache";
 import { cookies } from "next/headers";
@@ -16,6 +16,10 @@ const MEMBERS_BASE_URL = "/api/members";
 
 interface GetProfileResponseDto extends ResponseDto {
   data: ProfileDto;
+}
+
+interface GetSearchResultResponseDto extends ResponseDto {
+  data: SearchDto[];
 }
 
 export const getProfileRequest = async (memberId: number) => {
@@ -70,4 +74,22 @@ export const withdrawRequest = async (memberId: number) => {
   });
 
   redirect("/");
+};
+
+export const searchMemberByKey = async (key: string) => {
+  const accessToken = cookies().get(ACCESS_TOKEN_COOKIE_NAME)?.value;
+
+  if (!accessToken) return null;
+
+  const { data } = (await (
+    await getReq(MEMBERS_BASE_URL + `/search?key=${key}`, {
+      cache: "no-store",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        Refresh: `Bearer ${cookies().get(REFRESH_TOKEN_COOKIE_NAME)?.value}`,
+      },
+    })
+  ).json()) as GetSearchResultResponseDto;
+
+  return data;
 };

@@ -14,7 +14,10 @@ export default function UserAccountNav({ userInfo }: { userInfo: UserInfo }) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger>
-        <ProfileIcon userInfo={userInfo} />
+        <ProfileIcon
+          username={userInfo.username}
+          profileImage={userInfo.profileImage}
+        />
       </DropdownMenuTrigger>
       <DropdownMenuContent className="bg-white" align="end">
         <div className="flex items-center justify-start gap-2 p-2">

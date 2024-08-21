@@ -32,10 +32,7 @@ export default async function ProfilePage({
     return notFound();
   }
 
-  console.log(isMyProfile);
-
   const profile = await getProfileRequest(memberId);
-
   if (!profile) return notFound();
 
   return (

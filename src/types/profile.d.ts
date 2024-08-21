@@ -13,3 +13,8 @@ export interface ProfileDto {
   followerCnt: number;
   followingCnt: number;
 }
+
+export interface SearchDto {
+  memberId: number;
+  username: string;
+}

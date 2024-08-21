@@ -59,17 +59,20 @@ export default async function PetPage({
   }
 
   return (
-    <div className="bg-muted w-full min-h-screen py-8 flex flex-col items-center text-sm">
-      <div className="w-1/3 space-y-10">
-        <div className="flex justify-end items-center space-x-2">
-          <StarIcon className="size-4 fill-yellow-400 stroke-yellow-400" />
-          <span className="text-sm font-bold">{myPetInfo.starPoint}</span>
-          <CarrotIcon className="size-4 fill-orange-400 stroke-orange-400" />
-          <span className="text-sm font-bold">{myPetInfo.foodCnt}</span>
+    <div className="w-full min-h-screen py-8 flex flex-col items-center">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-10">
+        <div className="flex justify-between items-center">
+          <h1 className="text-2xl font-bold">My Pets</h1>
+          <div className="flex justify-end items-center space-x-2">
+            <StarIcon className="size-4 fill-yellow-400 stroke-yellow-400" />
+            <span className="font-bold">{myPetInfo.starPoint}</span>
+            <CarrotIcon className="size-4 fill-orange-400 stroke-orange-400" />
+            <span className="font-bold">{myPetInfo.foodCnt}</span>
+          </div>
         </div>
         {/* REPRESENT PET */}
         <div className="space-y-4 bg-transparent">
-          <span className="font-semibold">대표 펫 설정</span>
+          <span className="font-bold">대표 펫 설정</span>
           <div className="w-[80%] bg-zinc-300 mx-auto aspect-square rounded-lg ring-2 ring-blue-300  flex justify-center items-center relative">
             {representPet ? (
               <RepresentPetState representPet={representPet} />
@@ -81,11 +84,11 @@ export default async function PetPage({
           </div>
         </div>
 
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-4">
           {/* MY PET */}
-          <div className="space-y-2">
+          <div className="space-y-4">
             <div className="flex justify-between">
-              <span className="font-semibold">{`나의 펫: ${myPetInfo?.myPets.length} / ${myPetInfo.petHouseSize}`}</span>
+              <span className="font-bold">{`나의 펫: ${myPetInfo?.myPets.length} / ${myPetInfo.petHouseSize}`}</span>
             </div>
             <div className="flex items-center flex-wrap gap-2">
               {myPetInfo &&
@@ -115,9 +118,9 @@ export default async function PetPage({
           </div>
           {/* DEX */}
           <Separator />
-          <div className="flex flex-col space-y-2">
+          <div className="flex flex-col space-y-4">
             <div>
-              <span className="font-semibold">{`펫 도감: ${myCollections?.length} / ${allPets?.length}`}</span>
+              <span className="font-bold">{`펫 도감: ${myCollections?.length} / ${allPets?.length}`}</span>
             </div>
             <div className="flex items-center flex-wrap gap-2">
               {allPets?.map((pet, index) => (

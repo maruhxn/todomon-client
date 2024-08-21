@@ -1,17 +1,24 @@
 import { getProfileImage } from "@/lib/utils";
-import { UserInfo } from "@/types/auth";
 import { UserIcon } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 
-export default function ProfileIcon({ userInfo }: { userInfo: UserInfo }) {
+interface ProfileIconProps {
+  username: string;
+  profileImage: string;
+}
+
+export default function ProfileIcon({
+  username,
+  profileImage,
+}: ProfileIconProps) {
   return (
     <Avatar>
       <AvatarImage
         className="object-cover"
-        src={getProfileImage(userInfo.profileImage)}
+        src={getProfileImage(profileImage)}
       />
       <AvatarFallback>
-        <span className="sr-only">{userInfo?.username}</span>
+        <span className="sr-only">{username}</span>
         <UserIcon className="h-4 w-4" />
       </AvatarFallback>
     </Avatar>
