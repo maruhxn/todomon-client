@@ -4,7 +4,7 @@ import {
   ACCESS_TOKEN_COOKIE_NAME,
   REFRESH_TOKEN_COOKIE_NAME,
 } from "@/lib/constants";
-import { MyPetInfo, PetDexItem } from "@/types/pet";
+import { PetDexItem, PetInfo } from "@/types/pet";
 import { ResponseDto } from "@/types/response.dto";
 import { revalidateTag } from "next/cache";
 import { cookies } from "next/headers";
@@ -12,13 +12,16 @@ import { FeedValidator } from "../validators/pets.validator";
 import { getReq, patchReq, postReq } from "./http.repository";
 
 const PET_BASE_URL = "/api/pets";
+const MY_PET_BASE_URL = "/api/pets/my";
+const MEMBER_PET_BASE_URL = (memberId: number) =>
+  `/api/members/${memberId}/pets`;
 
 interface GetPetDexItemResponseDto extends ResponseDto {
   data: PetDexItem[];
 }
 
-interface GetMyPetResponseDto extends ResponseDto {
-  data: MyPetInfo;
+interface GetPetInfoResponseDto extends ResponseDto {
+  data: PetInfo;
 }
 
 const getAccessToken = (): string | null =>
@@ -27,12 +30,16 @@ const getAccessToken = (): string | null =>
 const getRefreshToken = (): string | null =>
   cookies().get(REFRESH_TOKEN_COOKIE_NAME)?.value || null;
 
+const getMemberId = (): string | null =>
+  cookies().get("memberId")?.value || null;
+
 export const createPetRequest = async () => {
   const accessToken = getAccessToken();
+  const memberId = getMemberId();
 
-  if (!accessToken) return null;
+  if (!accessToken || !memberId) return null;
 
-  await postReq(PET_BASE_URL, null, {
+  await postReq(MY_PET_BASE_URL, null, {
     headers: {
       Authorization: `Bearer ${accessToken}`,
       Refresh: `Bearer ${getRefreshToken()}`,
@@ -40,18 +47,19 @@ export const createPetRequest = async () => {
     },
   });
 
-  revalidateTag("my-pet");
+  revalidateTag(`member-${memberId}-pets`);
 };
 
 export const feedToPetRequest = async (petId: number, foodCnt: number) => {
   const accessToken = getAccessToken();
+  const memberId = getMemberId();
 
-  if (!accessToken) return null;
+  if (!accessToken || !memberId) return null;
 
   const result = FeedValidator.safeParse(foodCnt);
   if (!result.success) throw new Error(result.error.flatten().formErrors[0]);
 
-  await patchReq(PET_BASE_URL + `/${petId}/feed?foodCnt=${foodCnt}`, null, {
+  await patchReq(MY_PET_BASE_URL + `/${petId}/feed?foodCnt=${foodCnt}`, null, {
     headers: {
       Authorization: `Bearer ${accessToken}`,
       Refresh: `Bearer ${getRefreshToken()}`,
@@ -59,15 +67,16 @@ export const feedToPetRequest = async (petId: number, foodCnt: number) => {
     },
   });
 
-  revalidateTag("my-pet");
+  revalidateTag(`member-${memberId}-pets`);
 };
 
 export const setRepresentPetRequest = async (petId: number | null) => {
   const accessToken = getAccessToken();
+  const memberId = getMemberId();
 
-  if (!accessToken) return null;
+  if (!accessToken || !memberId) return null;
 
-  let url = PET_BASE_URL + `/represent-pet`;
+  let url = MY_PET_BASE_URL + `/represent-pet`;
 
   if (petId) {
     const queryString = new URLSearchParams({
@@ -84,7 +93,7 @@ export const setRepresentPetRequest = async (petId: number | null) => {
     },
   });
 
-  revalidateTag("my-pet");
+  revalidateTag(`member-${memberId}-pets`);
 };
 
 export const getAllPetsRequest = async () => {
@@ -108,16 +117,15 @@ export const getAllPetsRequest = async () => {
   return data;
 };
 
-export const getPetCollectionRequest = async () => {
+export const getPetCollectionRequest = async (memberId: number) => {
   const accessToken = getAccessToken();
-
   if (!accessToken) return null;
 
   const { data } = (await (
-    await getReq(PET_BASE_URL + "/collections", {
+    await getReq(MEMBER_PET_BASE_URL(memberId) + "/collections", {
       next: {
         revalidate: 3600,
-        tags: [`pet-collection`, `my-pet`],
+        tags: [`members-${memberId}-collection`, `member-${memberId}-pets`],
       },
       headers: {
         Authorization: `Bearer ${accessToken}`,
@@ -129,23 +137,23 @@ export const getPetCollectionRequest = async () => {
   return data;
 };
 
-export const getMyPetRequest = async () => {
+export const getPetInfoRequest = async (memberId: number) => {
   const accessToken = getAccessToken();
 
   if (!accessToken) return null;
 
   const { data } = (await (
-    await getReq(PET_BASE_URL + `/my`, {
+    await getReq(MEMBER_PET_BASE_URL(memberId), {
       next: {
         revalidate: 3600,
-        tags: [`my-pet`],
+        tags: [`member-${memberId}-pets`],
       },
       headers: {
         Authorization: `Bearer ${accessToken}`,
         Refresh: `Bearer ${getRefreshToken()}`,
       },
     })
-  ).json()) as GetMyPetResponseDto;
+  ).json()) as GetPetInfoResponseDto;
 
   return data;
 };

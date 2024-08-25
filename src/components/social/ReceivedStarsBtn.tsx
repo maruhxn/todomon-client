@@ -14,14 +14,14 @@ export default async function ReceivedStarsBtn() {
       <DialogTrigger asChild>
         <Button variant="outline" className="relative hover:scale-105">
           <StarsIcon className="mr-2 size-5" />별 수신함
-          {receivedStars.length > 0 && (
+          {receivedStars.totalElements > 0 && (
             <div className="absolute -top-1 -left-1 text-xs bg-red-500 rounded-full size-5 text-white flex items-center justify-center">
-              {receivedStars.length}
+              {receivedStars.totalElements}
             </div>
           )}
         </Button>
       </DialogTrigger>
-      <ReceivedStarsDialog receivedStars={receivedStars} />
+      <ReceivedStarsDialog receivedStars={receivedStars.results} />
     </Dialog>
   );
 }

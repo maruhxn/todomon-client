@@ -1,5 +1,4 @@
 interface UserItem {
-  memberId: number;
   username: string;
   profileImageUrl: string;
   title: TitleNameItme;
@@ -10,38 +9,38 @@ interface TitleNameItme {
   color: string;
 }
 
-export interface FollowingItem {
+export interface FollowingItem extends UserItem {
   followeeId: number;
-  username: string;
-  profileImageUrl: string;
-  title: TitleNameItme;
 }
 
-export interface FollowerItem {
+export interface FollowerItem extends UserItem {
   followerId: number;
-  username: string;
-  profileImageUrl: string;
-  title: TitleNameItme;
+  matFollow?: boolean;
 }
 
-export interface FollowRequestItem extends UserItem {}
-
-export interface ReceivedStarItem {
+export interface FollowRequestItem extends UserItem {
   id: number;
-  username: string;
-  profileImageUrl: string;
-  title: TitleNameItme;
+  senderId: number;
 }
 
-export interface TodoAchievementRankItem extends UserItem {
+export interface ReceivedStarItem extends UserItem {
+  id: number;
+  senderId: number;
+}
+
+export interface RankItem extends UserItem {
+  memberId: number;
+}
+
+export interface TodoAchievementRankItem extends RankItem {
   cnt: number;
 }
 
-export interface DiligenceRankItem extends UserItem {
+export interface DiligenceRankItem extends RankItem {
   level: number;
 }
 
-export interface CollectedPetRankItem extends UserItem {
+export interface CollectedPetRankItem extends RankItem {
   petCnt: number;
   lastCollectedAt: string;
 }

@@ -43,7 +43,7 @@ export default function AddTitleNameBtn({
 
   async function createTitleName(payload: CreateTitleNameRequest) {
     try {
-      await createTitleNameRequest(loginMemberId, payload);
+      await createTitleNameRequest(payload);
 
       form.reset();
 

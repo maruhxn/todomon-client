@@ -15,6 +15,7 @@ async function request(url: string, option: RequestInit) {
 
   if (!res.ok) {
     const errData = (await res.json()) as ErrorData;
+    console.log(errData);
     throw new Error(errData.message);
   }
 

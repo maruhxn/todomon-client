@@ -6,7 +6,7 @@ import { Dialog, DialogTrigger } from "../ui/dialog";
 import PendingFollowsDialog from "./PendingFollowsDialog";
 
 export default async function PendingFollowsBtn() {
-  const pendingFollows = await getPendingFollowRequest();
+  const pendingFollows = await getPendingFollowRequest(0);
   if (!pendingFollows) notFound();
 
   return (
@@ -15,14 +15,14 @@ export default async function PendingFollowsBtn() {
         <Button variant="outline" className="relative hover:scale-105">
           <UsersIcon className="mr-2 size-5" />
           요청
-          {pendingFollows.length > 0 && (
+          {pendingFollows.totalElements > 0 && (
             <div className="absolute -top-1 -left-1 text-xs bg-red-500 rounded-full size-5 text-white flex items-center justify-center">
-              {pendingFollows.length}
+              {pendingFollows.totalElements}
             </div>
           )}
         </Button>
       </DialogTrigger>
-      <PendingFollowsDialog pendingFollows={pendingFollows} />
+      <PendingFollowsDialog pendingFollows={pendingFollows.results} />
     </Dialog>
   );
 }

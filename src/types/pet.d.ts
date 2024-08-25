@@ -9,16 +9,13 @@ export interface RepresentPetItem {
   level: number;
 }
 
-export interface MyPetInfo {
+export interface PetInfo {
   representPetId?: number;
-  id: number;
-  starPoint: number;
-  foodCnt: number;
   petHouseSize: number;
-  myPets: MyPetItem[];
+  myPets: PetItem[];
 }
 
-export interface MyPetItem {
+export interface PetItem {
   id: number;
   name: string;
   rarity: Rarity;

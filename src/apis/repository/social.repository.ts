@@ -11,11 +11,8 @@ import {
   TodoAchievementRankItem,
 } from "@/types/social";
 import { cookies } from "next/headers";
-import { getReq, patchReq } from "./http.repository";
+import { getReq } from "./http.repository";
 
-const SOCIAL_BASE_URL = "/api/social";
-
-const FOLLOW_BASE_URL = SOCIAL_BASE_URL + "/follow";
 const OVERALL_RANK_BASE_URL = "/api/overall/rank";
 
 interface GetTodoAchievementRankResponseDto extends ResponseDto {
@@ -29,9 +26,6 @@ interface GetDiligenceRankResponseDto extends ResponseDto {
 interface GetCollectedPetRankResponseDto extends ResponseDto {
   data: CollectedPetRankItem[];
 }
-
-const getMemberId = (): string | null =>
-  cookies().get("memberId")?.value || null;
 
 const getAccessToken = (): string | null =>
   cookies().get(ACCESS_TOKEN_COOKIE_NAME)?.value || null;
@@ -102,25 +96,4 @@ export const getOverallRankingOfCollection = async () => {
   ).json()) as GetCollectedPetRankResponseDto;
 
   return data;
-};
-
-export const respondFollowRequest = async (
-  followId: number,
-  isAccepted: boolean
-) => {
-  const accessToken = getAccessToken();
-  if (!accessToken) return null;
-
-  const queryString = new URLSearchParams({
-    isAccepted: isAccepted.toString(),
-  }).toString();
-
-  const url = `${FOLLOW_BASE_URL}/accept/${followId}?${queryString}`;
-
-  await patchReq(url, null, {
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-      Refresh: `Bearer ${getRefreshToken()}`,
-    },
-  });
 };

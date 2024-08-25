@@ -4,6 +4,7 @@ import {
   ACCESS_TOKEN_COOKIE_NAME,
   REFRESH_TOKEN_COOKIE_NAME,
 } from "@/lib/constants";
+import { PageItem } from "@/types/globals";
 import { ResponseDto } from "@/types/response.dto";
 import { ReceivedStarItem } from "@/types/social";
 import { cookies } from "next/headers";
@@ -12,7 +13,7 @@ import { getReq, patchReq, postReq } from "./http.repository";
 const STAR_TRANSACTION_BASE_URL = "/api/social/stars";
 
 interface GetReceivedStarsResponseDto extends ResponseDto {
-  data: ReceivedStarItem[];
+  data: PageItem<ReceivedStarItem>;
 }
 
 const getAccessToken = (): string | null =>

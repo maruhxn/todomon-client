@@ -60,10 +60,6 @@ export default function SearchBar() {
     setInput("");
   }, [pathname]);
 
-  useEffect(() => {
-    console.log(queryResults);
-  }, [queryResults]);
-
   return (
     <Command
       ref={commandRef}
@@ -86,7 +82,7 @@ export default function SearchBar() {
             {queryResults.map((member) => (
               <CommandItem
                 onSelect={(e) => {
-                  router.push(`/members/profile/${e}`);
+                  router.push(`/members/profile/${member.memberId}`);
                   router.refresh();
                 }}
                 key={member.memberId}

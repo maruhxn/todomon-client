@@ -15,8 +15,8 @@ export default async function FollowInfoSection() {
     redirect("/");
   }
 
-  const followers = await getFollowerRequest(memberId);
-  const followings = await getFollowingRequest(memberId);
+  const followers = await getFollowerRequest(memberId, 0);
+  const followings = await getFollowingRequest(memberId, 0);
 
   if (!followers || !followings) redirect("/");
 
@@ -24,8 +24,8 @@ export default async function FollowInfoSection() {
     <section className="space-y-2">
       <h2 className="text-xl font-bold mt-4">팔로우 정보</h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-        <FollowerListCard followers={followers} />
-        <FollowingListCard followings={followings} />
+        <FollowerListCard followers={followers.results} />
+        <FollowingListCard followings={followings.results} />
       </div>
     </section>
   );

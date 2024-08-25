@@ -4,6 +4,8 @@ export type UserInfo = {
   username: string;
   role: "ROLE_ADMIN" | "ROLE_USER";
   profileImage: string;
+  starPoint: number;
+  foodCnt: number;
 };
 
 export type TokenDto = {

@@ -1,6 +1,6 @@
 "use client";
 
-import { respondFollowRequest } from "@/apis/repository/social.repository";
+import { respondFollowRequest } from "@/apis/repository/follow.repository";
 import { useToast } from "@/hooks/use-toast";
 import { CheckIcon, XIcon } from "lucide-react";
 import { useState } from "react";

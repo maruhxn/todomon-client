@@ -32,7 +32,10 @@ export default function ReceivedStarsDialog({
         <div className="grid grid-cols-1 gap-4">
           {receivedStars.length > 0 &&
             receivedStars.map((request) => (
-              <div className="flex justify-between items-center">
+              <div
+                key={request.id}
+                className="flex justify-between items-center"
+              >
                 <div key={request.id} className="flex items-center gap-4">
                   <ProfileIcon
                     username={request.username}

@@ -251,7 +251,6 @@ export default function TodoUpdateDialog({
         description: "투두 삭제에 성공했습니다",
       });
     } catch (error: any) {
-      console.error(error);
       return toast({
         title: "실패",
         description: error.message,

@@ -14,17 +14,6 @@ export default async function SocialPage() {
           <PendingFollowsBtn />
         </div>
       </div>
-      {/* <div className="my-4">
-        <div className="w-full rounded-lg relative">
-          <Input
-            placeholder="Search for a user.."
-            className="flex-1 bg-transparent"
-          />
-          <Button variant="ghost" className="absolute top-0 right-0 border-l">
-            <SearchIcon className="h-6 w-6" />
-          </Button>
-        </div>
-      </div> */}
       <SearchBar />
       <RankingSection />
       <FollowInfoSection />

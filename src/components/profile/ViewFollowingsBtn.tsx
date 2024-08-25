@@ -14,7 +14,8 @@ import {
 } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { getProfileImage } from "@/lib/utils";
-import { FollowItem } from "@/types/social";
+import { FollowingItem } from "@/types/social";
+
 import { useState } from "react";
 
 interface ViewFollowingsBtnProps {
@@ -27,13 +28,13 @@ export default function ViewFollowingsBtn({
   followingCnt,
 }: ViewFollowingsBtnProps) {
   const [open, setOpen] = useState<boolean>(false);
-  const [followings, setFollowings] = useState<FollowItem[]>([]);
+  const [followings, setFollowings] = useState<FollowingItem[]>([]);
   const { toast } = useToast();
 
   async function getFollowingList() {
     try {
-      const data = await getFollowingRequest(memberId);
-      setFollowings(data!);
+      const data = await getFollowingRequest(memberId, 0);
+      setFollowings(data!.results);
     } catch (error: any) {
       return toast({
         title: "실패",
@@ -61,7 +62,10 @@ export default function ViewFollowingsBtn({
           <div className="grid grid-cols-1 gap-4">
             {followings.length > 0 &&
               followings.map((following) => (
-                <div key={following.id} className="flex items-center gap-4">
+                <div
+                  key={following.followeeId}
+                  className="flex items-center gap-4"
+                >
                   <Avatar className="w-12 h-12">
                     <AvatarImage
                       src={getProfileImage(following.profileImageUrl)}

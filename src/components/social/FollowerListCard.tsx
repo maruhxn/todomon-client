@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { FollowerItem } from "@/types/social";
 import ProfileIcon from "../globals/ProfileIcon";
-import { Button } from "../ui/button";
+import FollowerListButtons from "./FollowerListButtons";
 
 interface FollowerListCardProps {
   followers: FollowerItem[];
@@ -27,14 +27,7 @@ export default function FollowerListCard({ followers }: FollowerListCardProps) {
                 />
                 <h3 className="font-semibold">{follower.username}</h3>
               </div>
-              <div className="flex gap-2">
-                <Button variant="default" className="text-xs">
-                  맞팔로우
-                </Button>
-                <Button variant="outline" className="text-xs">
-                  삭제
-                </Button>
-              </div>
+              <FollowerListButtons follower={follower} />
             </li>
           ))}
         </ul>

@@ -1,4 +1,5 @@
 import { UserInfo } from "@/types/auth";
+import { CarrotIcon, StarIcon } from "lucide-react";
 import Link from "next/link";
 import { Button } from "../ui/button";
 import { Dialog, DialogTrigger } from "../ui/dialog";
@@ -12,7 +13,17 @@ export default function Header({ userInfo }: { userInfo?: UserInfo | null }) {
         <span className="text-xl font-bold">TODOMON</span>
       </Link>
       {userInfo ? (
-        <UserAccountNav userInfo={userInfo} />
+        <div className="flex justify-end items-center space-x-6">
+          <div className="flex items-center gap-2">
+            <StarIcon className="size-4 fill-yellow-400 stroke-yellow-400" />
+            <span className="font-bold">{userInfo.starPoint}</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <CarrotIcon className="size-4 fill-orange-400 stroke-orange-400" />
+            <span className="font-bold">{userInfo.foodCnt}</span>
+          </div>
+          <UserAccountNav userInfo={userInfo} />
+        </div>
       ) : (
         <Dialog>
           <DialogTrigger asChild>

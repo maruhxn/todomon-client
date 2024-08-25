@@ -27,7 +27,10 @@ export default function PendingFollowsDialog({
         <div className="grid grid-cols-1 gap-4">
           {pendingFollows.length > 0 &&
             pendingFollows.map((request) => (
-              <div className="flex justify-between items-center">
+              <div
+                key={request.id}
+                className="flex justify-between items-center"
+              >
                 <div key={request.id} className="flex items-center gap-4">
                   <Avatar className="w-12 h-12">
                     <AvatarImage

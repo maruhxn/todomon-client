@@ -1,5 +1,5 @@
-import { getAuthRequest } from "@/apis/repository/auth.repository";
 import { getProfileRequest } from "@/apis/repository/members.repository";
+import FollowInfoBtn from "@/components/profile/FollowInfoBtn";
 import UpdateProfileBtn from "@/components/profile/UpdateProfileBtn";
 import ViewFollowersBtn from "@/components/profile/ViewFollowersBtn";
 import ViewFollowingsBtn from "@/components/profile/ViewFollowingsBtn";
@@ -10,6 +10,7 @@ import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 import { cn, getProfileImage } from "@/lib/utils";
 import { BadgeCheckIcon, StarIcon } from "lucide-react";
+import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
 
 export default async function ProfilePage({
@@ -18,12 +19,13 @@ export default async function ProfilePage({
   params: { memberId: string };
 }) {
   let isMyProfile = false;
-  let memberId;
+  let memberId: number;
 
-  const loginUserInfo = await getAuthRequest();
-  if (params.memberId === "my" && loginUserInfo) {
+  const loginMemberId = cookies().get("memberId")?.value ?? null;
+
+  if (loginMemberId && +loginMemberId === +params.memberId) {
     isMyProfile = true;
-    memberId = loginUserInfo?.id;
+    memberId = +loginMemberId;
   } else {
     memberId = Number(params.memberId);
   }
@@ -34,6 +36,8 @@ export default async function ProfilePage({
 
   const profile = await getProfileRequest(memberId);
   if (!profile) return notFound();
+
+  console.log(profile);
 
   return (
     <div className="bg-muted w-full min-h-screen flex justify-center items-center">
@@ -48,24 +52,32 @@ export default async function ProfilePage({
             <AvatarFallback>{profile.username}</AvatarFallback>
           </Avatar>
           <div className="mt-4 md:mt-0 text-center md:text-left">
-            <div className="flex items-center gap-2">
+            <div className="flex justify-between items-center gap-2">
               <p className="text-2xl font-bold">
-                {profile.titleName && (
+                {profile.title && (
                   <span
-                    className={`text-[${profile.titleColor}]`}
-                  >{`[${profile.titleName}] `}</span>
+                    className={`text-[${profile.title.color}]`}
+                  >{`[${profile.title.name}] `}</span>
                 )}
                 {profile.username}
               </p>
+              {!isMyProfile && (
+                <FollowInfoBtn
+                  memberId={memberId}
+                  followInfo={profile.followInfo}
+                />
+              )}
+
+              {}
             </div>
             <div className="flex items-center gap-4 mt-2 text-sm text-muted-foreground">
               <ViewFollowersBtn
                 memberId={memberId}
-                followerCnt={profile.followerCnt}
+                followerCnt={profile.followInfo.followerCnt}
               />
               <ViewFollowingsBtn
                 memberId={memberId}
-                followingCnt={profile.followingCnt}
+                followingCnt={profile.followInfo.followingCnt}
               />
             </div>
             <div className="flex items-center gap-4 mt-4 text-sm text-muted-foreground">

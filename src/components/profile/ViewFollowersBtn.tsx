@@ -14,7 +14,8 @@ import {
 } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { getProfileImage } from "@/lib/utils";
-import { FollowItem } from "@/types/social";
+import { FollowerItem } from "@/types/social";
+
 import { useState } from "react";
 
 interface ViewFollowersBtnProps {
@@ -27,13 +28,13 @@ export default function ViewFollowersBtn({
   followerCnt,
 }: ViewFollowersBtnProps) {
   const [open, setOpen] = useState<boolean>(false);
-  const [followers, setFollowers] = useState<FollowItem[]>([]);
+  const [followers, setFollowers] = useState<FollowerItem[]>([]);
   const { toast } = useToast();
 
   async function getFollowerList() {
     try {
-      const data = await getFollowerRequest(memberId);
-      setFollowers(data!);
+      const data = await getFollowerRequest(memberId, 0);
+      setFollowers(data!.results);
     } catch (error: any) {
       return toast({
         title: "실패",
@@ -61,7 +62,10 @@ export default function ViewFollowersBtn({
           <div className="grid grid-cols-1 gap-4">
             {followers.length > 0 &&
               followers.map((follower) => (
-                <div key={follower.id} className="flex items-center gap-4">
+                <div
+                  key={follower.followerId}
+                  className="flex items-center gap-4"
+                >
                   <Avatar className="w-12 h-12">
                     <AvatarImage
                       src={getProfileImage(follower.profileImageUrl)}

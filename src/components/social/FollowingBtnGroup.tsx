@@ -18,7 +18,6 @@ export default function FollowingBtnGroup({
       await sendStarRequest(memberId);
       toast({
         title: "성공",
-        description: "요청을 수락했습니다",
       });
     } catch (error: any) {
       return toast({
@@ -34,7 +33,6 @@ export default function FollowingBtnGroup({
       await unfollowRequest(memberId);
       toast({
         title: "성공",
-        description: "요청을 수락했습니다",
       });
     } catch (error: any) {
       console.error(error);

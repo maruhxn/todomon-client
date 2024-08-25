@@ -13,3 +13,18 @@ export const CreateTitleNameValidator = z.object({
 });
 
 export type CreateTitleNameRequest = z.infer<typeof CreateTitleNameValidator>;
+
+export const UpdateTitleNameValidator = z.object({
+  name: z
+    .string()
+    .min(2, "칭호명은 2 ~ 5 글자입니다.")
+    .max(5, "칭호명은 2 ~ 5 글자입니다.")
+    .nullable(),
+  color: z
+    .string({
+      required_error: "칭호 색은 비어있을 수 없습니다.",
+    })
+    .nullable(),
+});
+
+export type UpdateTitleNameRequest = z.infer<typeof UpdateTitleNameValidator>;
