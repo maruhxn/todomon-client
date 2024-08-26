@@ -1,5 +1,12 @@
+"use client";
+
+import { getPendingFollowRequest } from "@/apis/repository/follow.repository";
+import { useToast } from "@/hooks/use-toast";
 import { getProfileImage } from "@/lib/utils";
+import { PageItem } from "@/types/globals";
 import { FollowRequestItem } from "@/types/social";
+import { useEffect, useState } from "react";
+import { Paginations } from "../globals/Paginations";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Button } from "../ui/button";
 import {
@@ -12,12 +19,36 @@ import {
 import AcceptFollowBtn from "./AcceptFollowBtn";
 
 interface PendingFollowsDialogProps {
-  pendingFollows: FollowRequestItem[];
+  initialData: PageItem<FollowRequestItem>;
 }
 
 export default function PendingFollowsDialog({
-  pendingFollows,
+  initialData,
 }: PendingFollowsDialogProps) {
+  const [page, setPage] = useState<number>(0);
+  const [pendingFollowRequestPagingData, setPendingFollowRequestPagingData] =
+    useState<PageItem<FollowRequestItem> | null>(initialData);
+  const { toast } = useToast();
+
+  async function getReceivedStars() {
+    try {
+      const data = await getPendingFollowRequest(page);
+      setPendingFollowRequestPagingData(data);
+    } catch (error: any) {
+      return toast({
+        title: "실패",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  }
+
+  useEffect(() => {
+    getReceivedStars();
+  }, [page]);
+
+  if (!pendingFollowRequestPagingData) return;
+
   return (
     <DialogContent>
       <DialogHeader>
@@ -25,8 +56,8 @@ export default function PendingFollowsDialog({
       </DialogHeader>
       <div className="grid gap-4 py-4">
         <div className="grid grid-cols-1 gap-4">
-          {pendingFollows.length > 0 &&
-            pendingFollows.map((request) => (
+          {pendingFollowRequestPagingData.results.length > 0 &&
+            pendingFollowRequestPagingData.results.map((request) => (
               <div
                 key={request.id}
                 className="flex justify-between items-center"
@@ -44,13 +75,17 @@ export default function PendingFollowsDialog({
                 <AcceptFollowBtn followId={request.id} />
               </div>
             ))}
-          {pendingFollows.length <= 0 && (
+          {pendingFollowRequestPagingData.results.length <= 0 && (
             <span className="text-sm text-center font-semibold">
               팔로우한 유저가 없습니다.
             </span>
           )}
         </div>
       </div>
+      <Paginations
+        setPage={setPage}
+        pagingData={pendingFollowRequestPagingData}
+      />
       <DialogFooter>
         <DialogClose asChild>
           <Button type="button" variant="secondary">

@@ -37,8 +37,6 @@ export default async function ProfilePage({
   const profile = await getProfileRequest(memberId);
   if (!profile) return notFound();
 
-  console.log(profile);
-
   return (
     <div className="bg-muted w-full min-h-screen flex justify-center items-center">
       <Card>

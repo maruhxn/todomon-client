@@ -6,7 +6,7 @@ import { Dialog, DialogTrigger } from "../ui/dialog";
 import ReceivedStarsDialog from "./ReceivedStarsDialog";
 
 export default async function ReceivedStarsBtn() {
-  const receivedStars = await getReceivedStarsRequest();
+  const receivedStars = await getReceivedStarsRequest(0);
   if (!receivedStars) notFound();
 
   return (
@@ -21,7 +21,7 @@ export default async function ReceivedStarsBtn() {
           )}
         </Button>
       </DialogTrigger>
-      <ReceivedStarsDialog receivedStars={receivedStars.results} />
+      <ReceivedStarsDialog initialData={receivedStars} />
     </Dialog>
   );
 }

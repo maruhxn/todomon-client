@@ -22,7 +22,7 @@ export default async function PendingFollowsBtn() {
           )}
         </Button>
       </DialogTrigger>
-      <PendingFollowsDialog pendingFollows={pendingFollows.results} />
+      <PendingFollowsDialog initialData={pendingFollows} />
     </Dialog>
   );
 }

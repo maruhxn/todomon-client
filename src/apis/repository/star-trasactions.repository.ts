@@ -22,13 +22,13 @@ const getAccessToken = (): string | null =>
 const getRefreshToken = (): string | null =>
   cookies().get(REFRESH_TOKEN_COOKIE_NAME)?.value || null;
 
-export const getReceivedStarsRequest = async () => {
+export const getReceivedStarsRequest = async (page: number) => {
   const accessToken = getAccessToken();
 
   if (!accessToken) return null;
 
   const { data } = (await (
-    await getReq(STAR_TRANSACTION_BASE_URL, {
+    await getReq(STAR_TRANSACTION_BASE_URL + `?pageNumber=${page}`, {
       cache: "no-store",
       headers: {
         Authorization: `Bearer ${accessToken}`,

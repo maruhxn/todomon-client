@@ -14,9 +14,11 @@ import {
 } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { getProfileImage } from "@/lib/utils";
+import { PageItem } from "@/types/globals";
 import { FollowingItem } from "@/types/social";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { Paginations } from "../globals/Paginations";
 
 interface ViewFollowingsBtnProps {
   memberId: number;
@@ -28,13 +30,16 @@ export default function ViewFollowingsBtn({
   followingCnt,
 }: ViewFollowingsBtnProps) {
   const [open, setOpen] = useState<boolean>(false);
-  const [followings, setFollowings] = useState<FollowingItem[]>([]);
+  const [page, setPage] = useState<number>(0);
+  const [followingsPagingData, setFollowingsPagingData] =
+    useState<PageItem<FollowingItem> | null>(null);
+
   const { toast } = useToast();
 
   async function getFollowingList() {
     try {
       const data = await getFollowingRequest(memberId, 0);
-      setFollowings(data!.results);
+      setFollowingsPagingData(data);
     } catch (error: any) {
       return toast({
         title: "실패",
@@ -43,6 +48,10 @@ export default function ViewFollowingsBtn({
       });
     }
   }
+
+  useEffect(() => {
+    getFollowingList();
+  }, [page]);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -54,41 +63,44 @@ export default function ViewFollowingsBtn({
           <span className="font-medium">{followingCnt}</span> 팔로잉
         </div>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle>Following</DialogTitle>
-        </DialogHeader>
-        <div className="grid gap-4 py-4">
-          <div className="grid grid-cols-1 gap-4">
-            {followings.length > 0 &&
-              followings.map((following) => (
-                <div
-                  key={following.followeeId}
-                  className="flex items-center gap-4"
-                >
-                  <Avatar className="w-12 h-12">
-                    <AvatarImage
-                      src={getProfileImage(following.profileImageUrl)}
-                      alt={`@${following.username}`}
-                    />
-                    <AvatarFallback>{`@${following.username}`}</AvatarFallback>
-                  </Avatar>
-                  <h4 className="font-medium">{following.username}</h4>
-                </div>
-              ))}
-            {followings.length <= 0 && (
-              <span className="text-sm text-center">
-                팔로잉한 유저가 없습니다.
-              </span>
-            )}
+      {followingsPagingData && (
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Following</DialogTitle>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-1 gap-4">
+              {followingsPagingData.results.length > 0 &&
+                followingsPagingData.results.map((following) => (
+                  <div
+                    key={following.followeeId}
+                    className="flex items-center gap-4"
+                  >
+                    <Avatar className="w-12 h-12">
+                      <AvatarImage
+                        src={getProfileImage(following.profileImageUrl)}
+                        alt={`@${following.username}`}
+                      />
+                      <AvatarFallback>{`@${following.username}`}</AvatarFallback>
+                    </Avatar>
+                    <h4 className="font-medium">{following.username}</h4>
+                  </div>
+                ))}
+              {followingsPagingData.results.length <= 0 && (
+                <span className="text-sm text-center">
+                  팔로잉한 유저가 없습니다.
+                </span>
+              )}
+            </div>
           </div>
-        </div>
-        <DialogFooter>
-          <DialogClose>
-            <Button variant="outline">Close</Button>
-          </DialogClose>
-        </DialogFooter>
-      </DialogContent>
+          <Paginations setPage={setPage} pagingData={followingsPagingData} />
+          <DialogFooter>
+            <DialogClose>
+              <Button variant="outline">닫기</Button>
+            </DialogClose>
+          </DialogFooter>
+        </DialogContent>
+      )}
     </Dialog>
   );
 }
