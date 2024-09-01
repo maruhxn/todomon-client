@@ -2,6 +2,7 @@ export type UserInfo = {
   id: number;
   email: string;
   username: string;
+  subscribed: boolean;
   role: "ROLE_ADMIN" | "ROLE_USER";
   profileImage: string;
   starPoint: number;

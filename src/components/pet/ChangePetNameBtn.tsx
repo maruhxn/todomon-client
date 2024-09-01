@@ -2,12 +2,12 @@
 
 import { applyItemRequest } from "@/apis/repository/item.repository";
 import {
-  CreateTitleNameRequest,
-  CreateTitleNameValidator,
-} from "@/apis/validators/titleName.validator";
+  ChangePetNameRequest,
+  ChangePetNameValidator,
+} from "@/apis/validators/pets.validator";
 import { useToast } from "@/hooks/use-toast";
+import { PetItem } from "@/types/pet";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { TrophyIcon } from "lucide-react";
 import { useState } from "react";
 import { HexColorInput, HexColorPicker } from "react-colorful";
 import { useForm } from "react-hook-form";
@@ -31,18 +31,23 @@ import {
 } from "../ui/form";
 import { Input } from "../ui/input";
 
-export default function AddTitleNameBtn() {
+export default function ChangePetNameBtn({ pet }: { pet: PetItem }) {
   const [open, setOpen] = useState<boolean>(false);
   const { toast } = useToast();
 
-  const form = useForm<CreateTitleNameRequest>({
-    resolver: zodResolver(CreateTitleNameValidator),
+  const form = useForm<ChangePetNameRequest>({
+    resolver: zodResolver(ChangePetNameValidator),
+    defaultValues: {
+      petId: pet.id,
+      name: pet.name,
+      color: pet.color,
+    },
   });
 
-  async function createTitleName(payload: CreateTitleNameRequest) {
+  async function changePetName(payload: ChangePetNameRequest) {
     try {
-      await applyItemRequest("칭호 변경권", {
-        type: "upsertTitleName",
+      await applyItemRequest("펫 이름 변경권", {
+        type: "changePetName",
         ...payload,
       });
 
@@ -52,7 +57,7 @@ export default function AddTitleNameBtn() {
 
       toast({
         title: "성공",
-        description: "칭호 생성에 성공했습니다",
+        description: "이름 변경에 성공했습니다",
       });
     } catch (error: any) {
       return toast({
@@ -66,18 +71,15 @@ export default function AddTitleNameBtn() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" className="gap-2">
-          <TrophyIcon className="w-4 h-4" />
-          칭호
-        </Button>
+        <Button className="w-full h-8 mt-2">이름 변경</Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>칭호 추가</DialogTitle>
+          <DialogTitle>펫 이름 변경</DialogTitle>
         </DialogHeader>
         <Form {...form}>
           <form
-            onSubmit={form.handleSubmit(createTitleName)}
+            onSubmit={form.handleSubmit(changePetName)}
             className="flex flex-col space-y-4 px-4"
           >
             <FormField
@@ -86,7 +88,7 @@ export default function AddTitleNameBtn() {
               render={({ field }) => (
                 <FormItem className="flex-col">
                   <div className="flex items-center space-x-4">
-                    <FormLabel>칭호명</FormLabel>
+                    <FormLabel>이름</FormLabel>
                     <FormControl>
                       <Input className="flex-1" {...field} />
                     </FormControl>

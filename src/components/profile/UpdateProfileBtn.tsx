@@ -8,6 +8,7 @@ import {
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogFooter,
   DialogHeader,
@@ -128,11 +129,11 @@ export default function UpdateProfileBtn({ profile }: { profile: ProfileDto }) {
             />
             <DialogFooter>
               <Button type="submit">저장</Button>
-              <div>
+              <DialogClose>
                 <Button type="button" variant="outline">
                   닫기
                 </Button>
-              </div>
+              </DialogClose>
             </DialogFooter>
           </form>
         </Form>

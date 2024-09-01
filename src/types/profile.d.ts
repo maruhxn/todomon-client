@@ -7,6 +7,7 @@ export interface ProfileDto {
   username: string;
   email: string;
   profileImageUrl: string;
+  subscribed: boolean;
   level: number;
   gauge: number;
   title: TitleNameItem;

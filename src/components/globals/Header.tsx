@@ -27,7 +27,7 @@ export default function Header({ userInfo }: { userInfo?: UserInfo | null }) {
       ) : (
         <Dialog>
           <DialogTrigger asChild>
-            <Button>Login</Button>
+            <Button className="bg-green-500">Login</Button>
           </DialogTrigger>
           <LoginModal />
         </Dialog>

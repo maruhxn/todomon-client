@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils";
 
 import { PetItem } from "@/types/pet";
 import { BadgeCheckIcon, BadgeMinusIcon } from "lucide-react";
+import ChangePetNameBtn from "./ChangePetNameBtn";
 import FeedBtn from "./FeedBtn";
 
 interface PetInfoCardProps {
@@ -77,6 +78,7 @@ export default function PetItemCard({
           </div>
         </div>
         <FeedBtn petId={petItem.id} />
+        <ChangePetNameBtn pet={petItem} />
       </HoverCardContent>
     </HoverCard>
   );

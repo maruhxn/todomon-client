@@ -39,7 +39,6 @@ export default function ViewFollowersBtn({
     try {
       const data = await getFollowerRequest(memberId, page);
       setFollowersPagingData(data);
-      console.log(data);
     } catch (error: any) {
       return toast({
         title: "실패",

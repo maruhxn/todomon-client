@@ -4,17 +4,19 @@ import Header from "@/components/globals/Header";
 import { Toaster } from "@/components/ui/toaster";
 import { cn } from "@/lib/utils";
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Gowun_Dodum } from "next/font/google";
 import "./globals.css";
 
-const fontHeading = Inter({
+const fontHeading = Gowun_Dodum({
   subsets: ["latin"],
+  weight: "400",
   display: "swap",
   variable: "--font-heading",
 });
 
-const fontBody = Inter({
+const fontBody = Gowun_Dodum({
   subsets: ["latin"],
+  weight: "400",
   display: "swap",
   variable: "--font-body",
 });

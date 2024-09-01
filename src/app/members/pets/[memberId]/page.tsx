@@ -23,7 +23,10 @@ export default async function PetPage({
 
   const loginMemberId = cookies().get("memberId")?.value ?? null;
 
-  if (loginMemberId && params.memberId === "my") {
+  if (
+    loginMemberId &&
+    (params.memberId === "my" || params.memberId === loginMemberId)
+  ) {
     isMyProfile = true;
     memberId = +loginMemberId;
   } else {

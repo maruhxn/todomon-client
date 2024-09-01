@@ -31,6 +31,7 @@ export const getAuthRequest = async () => {
     if (!accessToken) return null;
     const { data } = (await (
       await getReq(AUTH_BASE_URL, {
+        cache: "no-store",
         headers: {
           Authorization: `Bearer ${accessToken}`,
           Refresh: `Bearer ${cookies().get(REFRESH_TOKEN_COOKIE_NAME)?.value}`,
@@ -62,7 +63,7 @@ export async function refresh() {
     headers: {
       Refresh: `Bearer ${cookies().get(REFRESH_TOKEN_COOKIE_NAME)?.value}`,
     },
-    cache: "no-cache",
+    cache: "no-store",
   });
 
   if (!res.ok) {

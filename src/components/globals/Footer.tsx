@@ -2,6 +2,7 @@ import {
   CalendarIcon,
   PawPrintIcon,
   ShoppingBasketIcon,
+  UserRoundIcon,
   UsersRoundIcon,
 } from "lucide-react";
 import Link from "next/link";
@@ -36,6 +37,13 @@ export default function Footer() {
       >
         <UsersRoundIcon className="size-6" />
         <span className="text-sm font-bold">SOCIAL</span>
+      </Link>
+      <Link
+        href="/members/profile/my"
+        className="flex justify-center items-center space-x-2 px-8 py-4 hover:bg-slate-400 rounded-lg cursor-pointer"
+      >
+        <UserRoundIcon className="size-6" />
+        <span className="text-sm font-bold">PROFILE</span>
       </Link>
     </nav>
   );
