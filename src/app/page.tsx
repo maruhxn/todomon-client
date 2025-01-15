@@ -4,7 +4,7 @@ import MainParagraph from "@/components/main/MainParagraph";
 
 export default function Home() {
   return (
-    <main className="font-body">
+    <main className="font-body flex flex-col gap-8">
       <MainParagraph />
       <section className="max-w-5xl mx-auto">
         <div className=" mx-auto text-center space-y-4">
@@ -17,11 +17,9 @@ export default function Home() {
         </div>
         <GoalSteps />
       </section>
-
-      <section className="mx-auto flex max-w-5xl justify-between">
-        <div className="aspect-square rounded-lg bg-green-500 w-3/4" />
-        <div className="space-y-4 ml-4">
-          <h3 className="text-3xl font-bold">미루는 버릇을 극복하세요</h3>
+      <section className="max-w-5xl mx-auto">
+        <div className=" mx-auto text-center space-y-4">
+          <h2 className="text-4xl font-bold">미루는 버릇을 극복하세요</h2>
           <h4 className="text-xl whitespace-pre leading-8">
             {
               "원하는 습관은 완수하고 싶은 퀘스트가 될 것입니다.\n귀여운 펫들을 키우고 친구들과의 경쟁에서 승리하려면 꾸준히 노력해야 합니다.\n재미있게 놀 때는 동기 부여가 필요 없습니다!"
@@ -29,7 +27,6 @@ export default function Home() {
           </h4>
         </div>
       </section>
-
       <FAQSection />
     </main>
   );

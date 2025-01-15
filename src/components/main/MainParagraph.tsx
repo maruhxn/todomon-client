@@ -1,6 +1,6 @@
 export default function MainParagraph() {
   return (
-    <div className="mx-auto text-center flex-grow flex flex-col items-center justify-center px-4 md:px-20 py-12 md:py-24 space-y-8">
+    <div className="mx-auto text-center flex-grow flex flex-col items-center justify-center px-4 py-8 space-y-8">
       <h1 className="text-4xl md:text-6xl font-bold mb-4 font-heading flex flex-col -space-y-12">
         <span>매일의 작은 목표로,</span>
         <br />
