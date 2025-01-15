@@ -1,4 +1,4 @@
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { FollowingItem } from "@/types/social";
 import ProfileIcon from "../globals/ProfileIcon";
 import FollowingBtnGroup from "./FollowingBtnGroup";
@@ -11,23 +11,27 @@ export default function FollowingListCard({
   followings,
 }: FollowingListCardProps) {
   return (
-    <Card className="rounded-2xl overflow-hidden">
-      <CardHeader className="bg-primary text-primary-foreground py-4 px-6">
-        <h2 className="text-xl font-bold">팔로잉</h2>
-      </CardHeader>
+    <Card className="rounded-2xl overflow-hidden min-h-[300px]">
       <CardContent className="py-6 px-6">
-        <ul className="space-y-4">
+        <ul className="divide-y-[1px]">
           {followings?.map((following) => (
             <li
               key={following.followeeId}
               className="flex items-center justify-between"
             >
-              <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-4 py-2">
                 <ProfileIcon
                   username={following.username}
                   profileImage={following.profileImageUrl}
                 />
-                <h3 className="font-semibold">{following.username}</h3>
+                <p className="flex space-x-1 text-sm">
+                  {following.title && (
+                    <span style={{ color: following.title.color }}>
+                      {`[${following.title.name}] `}
+                    </span>
+                  )}
+                  <span className="font-semibold">{following.username}</span>
+                </p>
               </div>
               <FollowingBtnGroup memberId={following.followeeId} />
             </li>

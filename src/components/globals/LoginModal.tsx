@@ -14,9 +14,6 @@ export const GOOGLE_LOGIN_URL = `${process.env.NEXT_PUBLIC_API_URL}/oauth2/autho
 export const NAVER_LOGIN_URL = `${process.env.NEXT_PUBLIC_API_URL}/oauth2/authorization/naver`;
 export const KAKAO_LOGIN_URL = `${process.env.NEXT_PUBLIC_API_URL}/oauth2/authorization/kakao`;
 
-const socialLoginBtnCss =
-  "flex justify-center items-center size-[44px] border-none cursor-pointer rounded-sm";
-
 export default function LoginModal() {
   return (
     <DialogContent className="sm:max-w-[425px]">
@@ -30,7 +27,7 @@ export default function LoginModal() {
       </DialogHeader>
       <div className="mt-2 grid grid-cols-1 gap-3">
         <Link
-          className={cn(buttonVariants(), "w-full text-white")}
+          className={cn(buttonVariants(), "w-full text-white h-12")}
           href={GOOGLE_LOGIN_URL}
         >
           <Icons.google className="h-4 w-4 mr-2" />
@@ -38,7 +35,7 @@ export default function LoginModal() {
         </Link>
 
         <Link
-          className={cn(buttonVariants(), "w-full text-white")}
+          className={cn(buttonVariants(), "w-full text-white h-12")}
           href={KAKAO_LOGIN_URL}
         >
           <Icons.kakao className="h-4 w-4 mr-2" />
@@ -46,7 +43,7 @@ export default function LoginModal() {
         </Link>
 
         <Link
-          className={cn(buttonVariants(), "w-full text-white")}
+          className={cn(buttonVariants(), "w-full text-white h-12")}
           href={NAVER_LOGIN_URL}
         >
           <Icons.naver className="h-4 w-4 mr-2" />

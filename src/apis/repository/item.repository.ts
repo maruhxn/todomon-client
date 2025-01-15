@@ -4,14 +4,19 @@ import {
   ACCESS_TOKEN_COOKIE_NAME,
   REFRESH_TOKEN_COOKIE_NAME,
 } from "@/lib/constants";
-import { TAG_INVENTORY, TAG_ORDERS, TAG_PROFILE } from "@/lib/tags";
+import { TAG_ORDERS, TAG_PROFILE } from "@/lib/tags";
 import { InventoryItemDto } from "@/types/item";
 import { ResponseDto } from "@/types/response.dto";
 import { ShopItem } from "@/types/shop";
 import { revalidateTag } from "next/cache";
 import { cookies } from "next/headers";
 import { PurchaseStarPointItemRequest } from "../validators/shop.validator";
-import { getReq, postReq } from "./http.repository";
+import {
+  getReq,
+  getReqWithAuth,
+  postReq,
+  postReqWithAuth,
+} from "./http.repository";
 
 const ITEM_BASE_URL = "/api/items";
 const PURCHASE_BASE_URL = "/api/purchase";
@@ -41,7 +46,6 @@ export const getAllShopItemsRequest = async () => {
   const { data } = (await (
     await getReq(ITEM_BASE_URL, {
       next: {
-        revalidate: 3600,
         tags: [`items`],
       },
       headers: {
@@ -129,22 +133,9 @@ export const refundRequest = async (orderId: number) => {
 };
 
 export const getInventoryItemsRequest = async () => {
-  const accessToken = getAccessToken();
-  const memberId = getMemberId();
-  if (!accessToken || !memberId) return null;
-
   const { data } = (await (
-    await getReq(ITEM_BASE_URL + `/inventory`, {
-      next: {
-        revalidate: 3600,
-        tags: [TAG_INVENTORY(+memberId)],
-      },
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-        Refresh: `Bearer ${getRefreshToken()}`,
-      },
-    })
-  ).json()) as GetInventoryItemsResponseDto;
+    await getReqWithAuth(ITEM_BASE_URL + `/inventory`)
+  )?.json()) as GetInventoryItemsResponseDto;
 
   return data;
 };
@@ -157,17 +148,5 @@ export const applyItemRequest = async (
   itemName: string,
   payload: ItemEffectRequest
 ) => {
-  const accessToken = getAccessToken();
-  const memberId = getMemberId();
-  if (!accessToken || !memberId) return null;
-
-  await postReq(ITEM_BASE_URL + `/use?itemName=${itemName}`, payload, {
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-      Refresh: `Bearer ${getRefreshToken()}`,
-      "Content-Type": "application/json",
-    },
-  });
-
-  revalidateTag(TAG_PROFILE(+memberId));
+  await postReqWithAuth(ITEM_BASE_URL + `/use?itemName=${itemName}`, payload);
 };

@@ -9,42 +9,52 @@ import Link from "next/link";
 
 export default function Footer() {
   return (
-    <nav className="fixed z-40 bg-white w-screen bottom-0 h-20 border-t-2 py-2 flex justify-around items-center">
-      <Link
-        href="/calendar/month"
-        className="flex justify-center items-center space-x-2 px-8 py-4 hover:bg-slate-400 rounded-lg cursor-pointer"
-      >
-        <CalendarIcon className="size-6" />
-        <span className="text-sm font-bold">CALENDAR</span>
-      </Link>
-      <Link
-        href="/shop"
-        className="flex justify-center items-center space-x-2 px-8 py-4 hover:bg-slate-400 rounded-lg cursor-pointer"
-      >
-        <ShoppingBasketIcon className="size-6" />
-        <span className="text-sm font-bold">SHOP</span>
-      </Link>
-      <Link
-        href="/members/pets/my"
-        className="flex justify-center items-center space-x-2 px-8 py-4 hover:bg-slate-400 rounded-lg cursor-pointer"
-      >
-        <PawPrintIcon className="size-6" />
-        <span className="text-sm font-bold">PET</span>
-      </Link>
-      <Link
-        href="/social"
-        className="flex justify-center items-center space-x-2 px-8 py-4 hover:bg-slate-400 rounded-lg cursor-pointer"
-      >
-        <UsersRoundIcon className="size-6" />
-        <span className="text-sm font-bold">SOCIAL</span>
-      </Link>
-      <Link
-        href="/members/profile/my"
-        className="flex justify-center items-center space-x-2 px-8 py-4 hover:bg-slate-400 rounded-lg cursor-pointer"
-      >
-        <UserRoundIcon className="size-6" />
-        <span className="text-sm font-bold">PROFILE</span>
-      </Link>
-    </nav>
+    <footer className="fixed z-40 bg-white w-screen bottom-0 h-20 border-t-2 py-2 grid grid-cols-5 px-4">
+      <FooterComponent
+        link="/calendar/month"
+        icon={<CalendarIcon className="size-5" />}
+        name="CALENDAR"
+      />
+      <FooterComponent
+        link="/shop"
+        icon={<ShoppingBasketIcon className="size-5" />}
+        name="SHOP"
+      />
+      <FooterComponent
+        link="/members/pets/my"
+        icon={<PawPrintIcon className="size-5" />}
+        name="PET"
+      />
+      <FooterComponent
+        link="/social"
+        icon={<UsersRoundIcon className="size-5" />}
+        name="SOCIAL"
+      />
+      <FooterComponent
+        link="/members/profile/my"
+        icon={<UserRoundIcon className="size-5" />}
+        name="PROFILE"
+      />
+    </footer>
+  );
+}
+
+function FooterComponent({
+  link,
+  icon,
+  name,
+}: {
+  link: string;
+  icon: any;
+  name: string;
+}) {
+  return (
+    <Link
+      href={link}
+      className="flex-col sm:flex-row flex justify-center items-center gap-2 sm:py-2 hover:bg-slate-400 rounded-lg cursor-pointer"
+    >
+      {icon}
+      <span className="text-sm font-bold">{name}</span>
+    </Link>
   );
 }

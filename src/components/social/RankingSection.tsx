@@ -126,7 +126,7 @@ export default function RankingSection() {
                 overallRanking.map((rank, index) => (
                   <li
                     key={rank.memberId}
-                    className="flex items-center justify-between"
+                    className="flex items-center justify-between w-full"
                   >
                     <div className="flex items-center space-x-4">
                       <ProfileIcon
@@ -159,7 +159,7 @@ export default function RankingSection() {
                 overallRanking.map((rank, index) => (
                   <li
                     key={rank.memberId}
-                    className="flex items-center justify-between"
+                    className="flex items-center justify-between w-full"
                   >
                     <div className="flex items-center space-x-4">
                       <ProfileIcon

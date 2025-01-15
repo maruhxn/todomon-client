@@ -1,9 +1,8 @@
 import { getAuthRequest } from "@/apis/repository/auth.repository";
-import Footer from "@/components/globals/Footer";
 import Header from "@/components/globals/Header";
 import { Toaster } from "@/components/ui/toaster";
 import { cn } from "@/lib/utils";
-import type { Metadata } from "next";
+import { Metadata } from "next";
 import { Gowun_Dodum } from "next/font/google";
 import "./globals.css";
 
@@ -44,7 +43,6 @@ export default async function RootLayout({
       >
         <Header userInfo={userInfo} />
         {children}
-        <Footer />
         <Toaster />
       </body>
     </html>

@@ -1,3 +1,5 @@
+"use client";
+
 import {
   removeFollowerRequest,
   sendFollowOrMatFollowRequest,
@@ -13,14 +15,10 @@ export default function FollowerListButtons({
   follower,
 }: FollowerListButtonsProps) {
   async function matFollow() {
-    "use server";
-
     await sendFollowOrMatFollowRequest(follower.followerId);
   }
 
   async function removeFollower() {
-    "use server";
-
     await removeFollowerRequest(follower.followerId);
   }
 
@@ -29,7 +27,7 @@ export default function FollowerListButtons({
       {follower?.matFollow === false && (
         <form action={matFollow}>
           <Button variant="default" className="text-xs">
-            맞팔로우
+            맞팔
           </Button>
         </form>
       )}

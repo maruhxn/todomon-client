@@ -1,6 +1,7 @@
 "use client";
 
 import { applyItemRequest } from "@/apis/repository/item.repository";
+import { removeTitleNameRequest } from "@/apis/repository/members.repository";
 import {
   CreateTitleNameRequest,
   CreateTitleNameValidator,
@@ -123,12 +124,22 @@ export default function AddTitleNameBtn() {
               )}
             />
             <DialogFooter>
-              <Button type="submit">저장</Button>
-              <DialogClose>
-                <Button type="button" variant="outline">
-                  닫기
-                </Button>
-              </DialogClose>
+              <Button
+                onClick={async () => await removeTitleNameRequest()}
+                type="button"
+                variant="destructive"
+                className="mr-auto"
+              >
+                칭호 삭제
+              </Button>
+              <div className="flex gap-2">
+                <Button type="submit">저장</Button>
+                <DialogClose>
+                  <Button type="button" variant="outline">
+                    닫기
+                  </Button>
+                </DialogClose>
+              </div>
             </DialogFooter>
           </form>
         </Form>

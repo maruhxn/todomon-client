@@ -17,11 +17,7 @@ import { InventoryItemDto } from "@/types/item";
 import { ShoppingBagIcon } from "lucide-react";
 import { useState } from "react";
 
-interface ViewInventoryBtnProps {
-  memberId: number;
-}
-
-export default function ViewInventoryBtn({ memberId }: ViewInventoryBtnProps) {
+export default function ViewInventoryBtn() {
   const [open, setOpen] = useState<boolean>(false);
   const [inventoryItems, setInventoryItems] = useState<InventoryItemDto[]>([]);
   const { toast } = useToast();
@@ -29,7 +25,7 @@ export default function ViewInventoryBtn({ memberId }: ViewInventoryBtnProps) {
   async function getInventoryItems() {
     try {
       const data = await getInventoryItemsRequest();
-      setInventoryItems(data!);
+      setInventoryItems(data);
     } catch (error: any) {
       return toast({
         title: "실패",
@@ -56,25 +52,7 @@ export default function ViewInventoryBtn({ memberId }: ViewInventoryBtnProps) {
         <DialogHeader>
           <DialogTitle>인벤토리</DialogTitle>
         </DialogHeader>
-        <div className="grid gap-4 py-4">
-          <div className="grid grid-cols-1 gap-4">
-            {inventoryItems.length > 0 &&
-              inventoryItems.map((inventoryItem) => (
-                <div
-                  key={inventoryItem.id}
-                  className="flex items-center justify-between bg-background hover:bg-accent hover:text-accent-foreground hover:cursor-pointer px-4 py-2 rounded-lg"
-                >
-                  <h4 className="font-medium">{inventoryItem.name}</h4>
-                  <h4 className="font-medium">{inventoryItem.quantity}개</h4>
-                </div>
-              ))}
-            {inventoryItems.length <= 0 && (
-              <span className="text-sm text-center">
-                인벤토리에 아이템이 없습니다.
-              </span>
-            )}
-          </div>
-        </div>
+        <InventoryItemList data={inventoryItems} />
         <DialogFooter>
           <DialogClose>
             <Button variant="outline">닫기</Button>
@@ -82,5 +60,29 @@ export default function ViewInventoryBtn({ memberId }: ViewInventoryBtnProps) {
         </DialogFooter>
       </DialogContent>
     </Dialog>
+  );
+}
+
+function InventoryItemList({ data }: { data: InventoryItemDto[] }) {
+  return (
+    <div className="grid gap-4 py-4">
+      <div className="grid grid-cols-1 gap-4">
+        {data.length > 0 &&
+          data.map((inventoryItem) => (
+            <div
+              key={inventoryItem.id}
+              className="flex items-center justify-between bg-background hover:bg-accent hover:text-accent-foreground hover:cursor-pointer px-4 py-2 rounded-lg"
+            >
+              <h4 className="font-medium">{inventoryItem.name}</h4>
+              <h4 className="font-medium">{inventoryItem.quantity}개</h4>
+            </div>
+          ))}
+        {data.length <= 0 && (
+          <span className="text-sm text-center">
+            인벤토리에 아이템이 없습니다.
+          </span>
+        )}
+      </div>
+    </div>
   );
 }

@@ -5,50 +5,54 @@ import {
   ACCESS_TOKEN_COOKIE_NAME,
   REFRESH_TOKEN_COOKIE_NAME,
 } from "@/lib/constants";
-import { TokenDto, UserInfo } from "@/types/auth";
+import { UserInfo } from "@/types/auth";
+import { ResponseDto } from "@/types/response.dto";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { ResponseDto } from "../../types/response.dto";
+import { getAccessToken, getRefreshToken } from "./global-action";
 
 const AUTH_BASE_URL = `/api/auth`;
-
-const LOGOUT_URL = `${AUTH_BASE_URL}/logout`;
-const REFRESH_URL = `${AUTH_BASE_URL}/refresh`;
 
 interface GetAuthResponseDto extends ResponseDto {
   data: UserInfo;
 }
 
-interface RefreshResponse {
-  code: string;
-  message: string;
-  data: TokenDto;
+// 애초에 token이 없는 경우 -> 로그인 X -> redirect
+// token이 있는데, 유효하지 않은 경우 -> refresh -> refresh token이 만료된 경우 -> redirect
+// token이 있는데, 유효한 경우 -> user 정보를 가져옴
+export async function getAuthRequest() {
+  const accessToken = (await getAccessToken()) ?? null;
+
+  if (!accessToken) redirect("/");
+
+  const res = await getReq(`/api/auth`, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+
+  if (!res.ok) {
+    if (res.status === 401) {
+      const resultMessage = await refresh();
+      if (resultMessage !== "OK") {
+      } else {
+        return redirect("/");
+      }
+    } else {
+      throw new Error("Failed to get user info");
+    }
+  } else {
+    const { data } = (await res.json()) as GetAuthResponseDto;
+    return data;
+  }
 }
 
-export const getAuthRequest = async () => {
-  try {
-    const accessToken = cookies().get(ACCESS_TOKEN_COOKIE_NAME)?.value;
-    if (!accessToken) return null;
-    const { data } = (await (
-      await getReq(AUTH_BASE_URL, {
-        cache: "no-store",
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          Refresh: `Bearer ${cookies().get(REFRESH_TOKEN_COOKIE_NAME)?.value}`,
-        },
-      })
-    ).json()) as GetAuthResponseDto;
-    return data;
-  } catch (error) {
-    return null;
-  }
-};
-
 export async function logout() {
-  await getReq(LOGOUT_URL, {
+  const accessToken = (await getAccessToken()) ?? "";
+
+  await getReq(`${AUTH_BASE_URL}/logout`, {
     headers: {
-      Authorization: `Bearer ${cookies().get(ACCESS_TOKEN_COOKIE_NAME)?.value}`,
-      Refresh: `Bearer ${cookies().get(REFRESH_TOKEN_COOKIE_NAME)?.value}`,
+      Authorization: `Bearer ${accessToken}`,
     },
   });
 
@@ -58,19 +62,18 @@ export async function logout() {
 }
 
 export async function refresh() {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}${REFRESH_URL}`, {
-    method: "GET",
+  const refreshToken = (await getRefreshToken()) ?? "";
+
+  const res = await getReq(`${AUTH_BASE_URL}/refresh`, {
     headers: {
-      Refresh: `Bearer ${cookies().get(REFRESH_TOKEN_COOKIE_NAME)?.value}`,
+      Refresh: `Bearer ${refreshToken}`,
     },
-    cache: "no-store",
   });
 
   if (!res.ok) {
     const errData = (await res.json()) as ErrorData;
-    throw new Error(errData.message);
+    return errData.message;
   }
 
-  const { data } = (await res.json()) as RefreshResponse;
-  return data;
+  return "OK";
 }

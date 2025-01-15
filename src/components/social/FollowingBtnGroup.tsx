@@ -46,11 +46,11 @@ export default function FollowingBtnGroup({
 
   return (
     <div className="flex gap-2">
-      <Button variant="default" onClick={sendStar} className="text-xs px-2">
-        ⭐️ 보내기
+      <Button variant="default" onClick={sendStar} className="text-xs">
+        ⭐️
       </Button>
-      <Button variant="outline" onClick={unfollow} className="text-xs px-2">
-        언팔로우
+      <Button variant="outline" onClick={unfollow} className="text-xs">
+        삭제
       </Button>
     </div>
   );

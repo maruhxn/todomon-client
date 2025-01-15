@@ -1,18 +1,16 @@
 "use server";
 
-import {
-  ACCESS_TOKEN_COOKIE_NAME,
-  REFRESH_TOKEN_COOKIE_NAME,
-} from "@/lib/constants";
-import { TAG_PROFILE } from "@/lib/tags";
 import { ProfileDto, SearchDto } from "@/types/profile";
 import { ResponseDto } from "@/types/response.dto";
-import { revalidateTag } from "next/cache";
-import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { deleteReq, formPatchReq, getReq } from "./http.repository";
+import {
+  deleteReqWithAuth,
+  formPatchReqWithAuth,
+  getReqWithAuth,
+} from "./http.repository";
 
 const MEMBERS_BASE_URL = "/api/members";
+const TITLENAME_BASE_URL = "/api/members/titleNames/my";
 
 interface GetProfileResponseDto extends ResponseDto {
   data: ProfileDto;
@@ -22,74 +20,37 @@ interface GetSearchResultResponseDto extends ResponseDto {
   data: SearchDto[];
 }
 
+// TODO: 캐싱 추가
 export const getProfileRequest = async (memberId: number) => {
-  const accessToken = cookies().get(ACCESS_TOKEN_COOKIE_NAME)?.value;
-
-  if (!accessToken) return null;
-
   const { data } = (await (
-    await getReq(MEMBERS_BASE_URL + `/${memberId}`, {
-      next: {
-        revalidate: 3600,
-        tags: [TAG_PROFILE(memberId)],
-      },
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-        Refresh: `Bearer ${cookies().get(REFRESH_TOKEN_COOKIE_NAME)?.value}`,
-      },
-    })
-  ).json()) as GetProfileResponseDto;
+    await getReqWithAuth(MEMBERS_BASE_URL + `/${memberId}`)
+  )?.json()) as GetProfileResponseDto;
 
   return data;
 };
 
+// TODO: 재검증 추가
 export const updateProfileRequest = async (
   memberId: number,
   formData: FormData
 ) => {
-  const accessToken = cookies().get(ACCESS_TOKEN_COOKIE_NAME)?.value;
-
-  if (!accessToken) return null;
-
-  await formPatchReq(MEMBERS_BASE_URL + `/${memberId}`, formData, {
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-      Refresh: `Bearer ${cookies().get(REFRESH_TOKEN_COOKIE_NAME)?.value}`,
-    },
-  });
-
-  revalidateTag(TAG_PROFILE(memberId));
+  await formPatchReqWithAuth(MEMBERS_BASE_URL + `/${memberId}`, formData);
 };
 
+// TODO: 캐시 삭제
 export const withdrawRequest = async (memberId: number) => {
-  const accessToken = cookies().get(ACCESS_TOKEN_COOKIE_NAME)?.value;
-
-  if (!accessToken) return null;
-
-  await deleteReq(MEMBERS_BASE_URL + `/${memberId}`, {
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-      Refresh: `Bearer ${cookies().get(REFRESH_TOKEN_COOKIE_NAME)?.value}`,
-    },
-  });
-
+  await deleteReqWithAuth(MEMBERS_BASE_URL + `/${memberId}`);
   redirect("/");
 };
 
 export const searchMemberByKey = async (key: string) => {
-  const accessToken = cookies().get(ACCESS_TOKEN_COOKIE_NAME)?.value;
-
-  if (!accessToken) return null;
-
   const { data } = (await (
-    await getReq(MEMBERS_BASE_URL + `/search?key=${key}`, {
-      cache: "no-store",
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-        Refresh: `Bearer ${cookies().get(REFRESH_TOKEN_COOKIE_NAME)?.value}`,
-      },
-    })
-  ).json()) as GetSearchResultResponseDto;
+    await getReqWithAuth(MEMBERS_BASE_URL + `/search?memberNameKey=${key}`)
+  )?.json()) as GetSearchResultResponseDto;
 
   return data;
+};
+
+export const removeTitleNameRequest = async () => {
+  await deleteReqWithAuth(TITLENAME_BASE_URL);
 };

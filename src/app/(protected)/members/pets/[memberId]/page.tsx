@@ -1,5 +1,4 @@
 import {
-  createPetRequest,
   getAllPetsRequest,
   getPetCollectionRequest,
   getPetInfoRequest,
@@ -9,8 +8,9 @@ import PetItemCard from "@/components/pet/MyPetCard";
 import RepresentPetState from "@/components/pet/RepresentPetState";
 import { Separator } from "@/components/ui/separator";
 import { PetDexItem } from "@/types/pet";
-import { PlusSquareIcon } from "lucide-react";
+import { CirclePlusIcon } from "lucide-react";
 import { cookies } from "next/headers";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 
 export default async function PetPage({
@@ -101,15 +101,14 @@ export default async function PetPage({
                 { length: remainingCapacity },
                 (_, index) => index
               ).map((index) => (
-                <form
-                  action={createPetRequest}
+                <div
                   key={index}
-                  className="w-[10%] aspect-square flex justify-center items-center rounded-lg"
+                  className="bg-zinc-100 w-[10%] aspect-square flex justify-center items-center rounded-lg"
                 >
-                  <button>
-                    <PlusSquareIcon className="w-full stroke-2 stroke-zinc-500 hover:stroke-zinc-700 cursor-pointer" />
-                  </button>
-                </form>
+                  <Link href="/shop">
+                    <CirclePlusIcon className="w-full stroke-2 stroke-zinc-500 hover:stroke-zinc-700" />
+                  </Link>
+                </div>
               ))}
             </div>
           </div>

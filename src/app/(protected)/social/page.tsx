@@ -1,10 +1,20 @@
-import FollowInfoSection from "@/components/social/FollowInfoSection";
+import FollowerInfoSection from "@/components/social/FollowerInfoSection";
+import FollowingInfoSection from "@/components/social/FollowingInfoSection";
 import PendingFollowsBtn from "@/components/social/PendingFollowsBtn";
 import RankingSection from "@/components/social/RankingSection";
 import ReceivedStarsBtn from "@/components/social/ReceivedStarsBtn";
 import SearchBar from "@/components/social/SearchBar";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 
 export default async function SocialPage() {
+  const memberIdStr = cookies().get("memberId")?.value ?? "";
+  const memberId = parseInt(memberIdStr);
+
+  if (isNaN(memberId)) {
+    redirect("/");
+  }
+
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
       <div className="flex items-center justify-between mb-6">
@@ -16,7 +26,8 @@ export default async function SocialPage() {
       </div>
       <SearchBar />
       <RankingSection />
-      <FollowInfoSection />
+      <FollowerInfoSection memberId={memberId} />
+      <FollowingInfoSection memberId={memberId} />
     </div>
   );
 }
