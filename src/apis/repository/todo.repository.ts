@@ -7,91 +7,33 @@ import {
   UpdateTodoRequest,
   UpdateTodoStatusRequest,
 } from "@/apis/validators/todo.validator";
-import {
-  ACCESS_TOKEN_COOKIE_NAME,
-  REFRESH_TOKEN_COOKIE_NAME,
-} from "@/lib/constants";
-import { ResponseDto } from "@/types/response.dto";
 import { TodoItem } from "@/types/todo";
-import { revalidatePath } from "next/cache";
-import { cookies } from "next/headers";
-import { deleteReq, getReq, patchReq, postReq } from "./http.repository";
+import {
+  deleteReqWithAuth,
+  getReqWithAuth,
+  mutationJsonReqWithAuth,
+} from "./http.repository";
 
 const TODO_BASE_URL = "/api/todo";
 
-interface GetTodosResponseDto extends ResponseDto {
-  data: TodoItem[];
-}
-
 export const getTodoByDay = async (date: string) => {
-  const accessToken = cookies().get(ACCESS_TOKEN_COOKIE_NAME)?.value;
-
-  if (!accessToken) return null;
-
-  const { data } = (await (
-    await getReq(TODO_BASE_URL + `/day?date=${date}`, {
-      cache: "no-cache",
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-        Refresh: `Bearer ${cookies().get(REFRESH_TOKEN_COOKIE_NAME)?.value}`,
-      },
-    })
-  ).json()) as GetTodosResponseDto;
-
-  return data;
+  return await getReqWithAuth<TodoItem[]>(TODO_BASE_URL + `/day?date=${date}`);
 };
 
 export const getTodoByWeek = async (startOfWeek: string) => {
-  const accessToken = cookies().get(ACCESS_TOKEN_COOKIE_NAME)?.value;
-
-  if (!accessToken) return null;
-
-  const { data } = (await (
-    await getReq(TODO_BASE_URL + `/week?startOfWeek=${startOfWeek}`, {
-      cache: "no-cache",
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-        Refresh: `Bearer ${cookies().get(REFRESH_TOKEN_COOKIE_NAME)?.value}`,
-      },
-    })
-  ).json()) as GetTodosResponseDto;
-
-  return data;
+  return await getReqWithAuth<TodoItem[]>(
+    TODO_BASE_URL + `/week?startOfWeek=${startOfWeek}`
+  );
 };
 
 export const getTodoByMonth = async (yearMonth: string) => {
-  const accessToken = cookies().get(ACCESS_TOKEN_COOKIE_NAME)?.value;
-
-  if (!accessToken) return null;
-
-  const { data } = (await (
-    await getReq(TODO_BASE_URL + `/month?yearMonth=${yearMonth}`, {
-      cache: "no-cache",
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-        Refresh: `Bearer ${cookies().get(REFRESH_TOKEN_COOKIE_NAME)?.value}`,
-      },
-    })
-  ).json()) as GetTodosResponseDto;
-
-  return data;
+  return await getReqWithAuth<TodoItem[]>(
+    TODO_BASE_URL + `/month?yearMonth=${yearMonth}`
+  );
 };
 
 export const createTodoRequest = async (payload: CreateTodoRequest) => {
-  const accessToken = cookies().get(ACCESS_TOKEN_COOKIE_NAME)?.value;
-
-  if (!accessToken) return null;
-
-  await postReq(TODO_BASE_URL, payload, {
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-      Refresh: `Bearer ${cookies().get(REFRESH_TOKEN_COOKIE_NAME)?.value}`,
-      "Content-Type": "application/json",
-    },
-  });
-
-  revalidatePath("/month");
-  // revalidateTag("")
+  return await mutationJsonReqWithAuth(TODO_BASE_URL, payload);
 };
 
 export const updateTodoRequest = async (
@@ -99,10 +41,6 @@ export const updateTodoRequest = async (
   payload: UpdateTodoRequest,
   queryParameter: UpdateAndDeleteTodoQueryParams
 ) => {
-  const accessToken = cookies().get(ACCESS_TOKEN_COOKIE_NAME)?.value;
-
-  if (!accessToken) return null;
-
   const result =
     UpdateAndDeleteTodoQueryParamsValidator.safeParse(queryParameter);
   if (!result.success) throw new Error(result.error.flatten().formErrors[0]);
@@ -114,16 +52,7 @@ export const updateTodoRequest = async (
 
   const url = `${TODO_BASE_URL}/${objectId}?${queryParams}`;
 
-  await patchReq(url, payload, {
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-      Refresh: `Bearer ${cookies().get(REFRESH_TOKEN_COOKIE_NAME)?.value}`,
-      "Content-Type": "application/json",
-    },
-  });
-
-  revalidatePath("/month");
-  // revalidateTag("")
+  return await mutationJsonReqWithAuth(url, payload);
 };
 
 export const updateTodoStatusRequest = async (
@@ -131,32 +60,15 @@ export const updateTodoStatusRequest = async (
   payload: UpdateTodoStatusRequest,
   isInstance: boolean
 ) => {
-  const accessToken = cookies().get(ACCESS_TOKEN_COOKIE_NAME)?.value;
-
-  if (!accessToken) return null;
-
   const url = `${TODO_BASE_URL}/${objectId}/status?isInstance=${isInstance}`;
 
-  await patchReq(url, payload, {
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-      Refresh: `Bearer ${cookies().get(REFRESH_TOKEN_COOKIE_NAME)?.value}`,
-      "Content-Type": "application/json",
-    },
-  });
-
-  revalidatePath("/month");
-  // revalidateTag("")
+  return await mutationJsonReqWithAuth(url, payload);
 };
 
 export const deleteTodoRequest = async (
   objectId: number,
   queryParameter: UpdateAndDeleteTodoQueryParams
 ) => {
-  const accessToken = cookies().get(ACCESS_TOKEN_COOKIE_NAME)?.value;
-
-  if (!accessToken) return null;
-
   const result =
     UpdateAndDeleteTodoQueryParamsValidator.safeParse(queryParameter);
   if (!result.success) throw new Error(result.error.message);
@@ -168,12 +80,5 @@ export const deleteTodoRequest = async (
 
   const url = `${TODO_BASE_URL}/${objectId}?${queryParams}`;
 
-  await deleteReq(url, {
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-      Refresh: `Bearer ${cookies().get(REFRESH_TOKEN_COOKIE_NAME)?.value}`,
-    },
-  });
-
-  revalidatePath("/month");
+  return await deleteReqWithAuth(url);
 };

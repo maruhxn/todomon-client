@@ -4,6 +4,7 @@ import DayCalendarAllDayTodoBox from "@/components/calendar/day/DayCalendarAllDa
 import DayCalendarTimeControlSection from "@/components/calendar/day/DayCalendarTimeControlSection";
 import DayCalendarTodoBox from "@/components/calendar/day/DayCalendarTodoBox";
 import { times } from "@/lib/constants";
+import { handleErrorForServerComponent } from "@/lib/error-handler";
 import { TodoItem } from "@/types/todo";
 import { format } from "date-fns";
 
@@ -63,7 +64,9 @@ export default async function DayCalendarPage({
 }) {
   const date = searchParams.day ? new Date(searchParams.day) : new Date();
   const todos = await getTodoByDay(format(date, "yyyy-MM-dd"));
-
+  if ("error" in todos) {
+    return handleErrorForServerComponent(todos);
+  }
   const allDayTodos = todos?.filter((todo) => todo.allDay);
   const regularTodos = todos?.filter((todo) => !todo.allDay);
 

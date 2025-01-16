@@ -6,56 +6,36 @@ import { FollowerItem, FollowingItem, FollowRequestItem } from "@/types/social";
 import {
   deleteReqWithAuth,
   getReqWithAuth,
+  mutationJsonReqWithAuth,
   patchReqWithAuth,
-  postReqWithAuth,
 } from "./http.repository";
 
 const FOLLOW_BASE_URL = "/api/social/follows";
-
-interface GetFollowerResponseDto extends ResponseDto {
-  data: PageItem<FollowerItem>;
-}
-
-interface GetFollowingResponseDto extends ResponseDto {
-  data: PageItem<FollowingItem>;
-}
 
 interface GetPendingFollowRequestsResponseDto extends ResponseDto {
   data: PageItem<FollowRequestItem>;
 }
 
 export const sendFollowOrMatFollowRequest = async (memberId: number) => {
-  await postReqWithAuth(FOLLOW_BASE_URL + `/${memberId}`, null);
+  await mutationJsonReqWithAuth(FOLLOW_BASE_URL + `/${memberId}`, null);
 };
 
 export const getFollowerRequest = async (memberId: number, page: number) => {
-  const { data } = (await (
-    await getReqWithAuth(
-      FOLLOW_BASE_URL + `/${memberId}/followers?pageNumber=${page}`
-    )
-  )?.json()) as GetFollowerResponseDto;
-
-  return data;
+  return await getReqWithAuth<PageItem<FollowerItem>>(
+    FOLLOW_BASE_URL + `/${memberId}/followers?pageNumber=${page}`
+  );
 };
 
 export const getFollowingRequest = async (memberId: number, page: number) => {
-  const { data } = (await (
-    await getReqWithAuth(
-      FOLLOW_BASE_URL + `/${memberId}/followings?pageNumber=${page}`
-    )
-  )?.json()) as GetFollowingResponseDto;
-
-  return data;
+  return await getReqWithAuth<PageItem<FollowingItem>>(
+    FOLLOW_BASE_URL + `/${memberId}/followings?pageNumber=${page}`
+  );
 };
 
 export const getPendingFollowRequest = async (page: number) => {
-  const { data } = (await (
-    await getReqWithAuth(
-      FOLLOW_BASE_URL + `/requests/pending?pageNumber=${page}`
-    )
-  )?.json()) as GetPendingFollowRequestsResponseDto;
-
-  return data;
+  return await getReqWithAuth<PageItem<FollowRequestItem>>(
+    FOLLOW_BASE_URL + `/requests/pending?pageNumber=${page}`
+  );
 };
 
 export const removeFollowerRequest = async (followerId: number) => {
@@ -80,5 +60,8 @@ export const respondFollowRequest = async (
 };
 
 export const matFollowRequest = async (followerId: number) => {
-  await postReqWithAuth(FOLLOW_BASE_URL + `/${followerId}/mutual`, null);
+  await mutationJsonReqWithAuth(
+    FOLLOW_BASE_URL + `/${followerId}/mutual`,
+    null
+  );
 };

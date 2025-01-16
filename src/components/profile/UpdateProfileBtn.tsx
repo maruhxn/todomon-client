@@ -45,27 +45,24 @@ export default function UpdateProfileBtn({ profile }: { profile: ProfileDto }) {
     username,
     profileImage,
   }: UpdateProfileRequest) {
-    try {
-      const formData = new FormData();
-      formData.append("username", username);
-      if (profileImage) formData.append("profileImage", profileImage[0]);
+    const formData = new FormData();
+    formData.append("username", username);
+    if (profileImage) formData.append("profileImage", profileImage[0]);
 
-      await updateProfileRequest(profile.id, formData);
+    const result = await updateProfileRequest(profile.id, formData);
+    form.reset();
+    setOpen(false);
 
-      form.reset();
-
-      setOpen(false);
-
+    if (result) {
+      return toast({
+        title: "실패",
+        description: result.error.message,
+        variant: "destructive",
+      });
+    } else {
       toast({
         title: "성공",
         description: "프로필 수정에 성공했습니다",
-      });
-    } catch (error: any) {
-      console.error(error);
-      return toast({
-        title: "실패",
-        description: error.message,
-        variant: "destructive",
       });
     }
   }
@@ -127,10 +124,12 @@ export default function UpdateProfileBtn({ profile }: { profile: ProfileDto }) {
                 </FormItem>
               )}
             />
-            <DialogFooter>
-              <Button type="submit">저장</Button>
+            <DialogFooter className="flex flex-col xs:flex-row gap-2">
+              <Button type="submit" disabled={form.formState.isSubmitting}>
+                저장
+              </Button>
               <DialogClose>
-                <Button type="button" variant="outline">
+                <Button type="button" variant="outline" className="w-full">
                   닫기
                 </Button>
               </DialogClose>

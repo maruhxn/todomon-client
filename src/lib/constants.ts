@@ -1,6 +1,5 @@
 export const ACCESS_TOKEN_COOKIE_NAME = "accessToken";
 export const REFRESH_TOKEN_COOKIE_NAME = "refreshToken";
-export const MEMBER_ID_COOKIE_NAME = "memberId";
 
 export const times = [
   "00:00 AM",

@@ -41,25 +41,41 @@ export default function AddTitleNameBtn() {
   });
 
   async function createTitleName(payload: CreateTitleNameRequest) {
-    try {
-      await applyItemRequest("칭호 변경권", {
-        type: "upsertTitleName",
-        ...payload,
+    const result = await applyItemRequest("칭호 변경권", {
+      type: "upsertTitleName",
+      ...payload,
+    });
+
+    form.reset();
+    setOpen(false);
+
+    if (result) {
+      return toast({
+        title: "실패",
+        description: result.error.message,
+        variant: "destructive",
       });
-
-      form.reset();
-
-      setOpen(false);
-
-      toast({
+    } else {
+      return toast({
         title: "성공",
         description: "칭호 생성에 성공했습니다",
       });
-    } catch (error: any) {
+    }
+  }
+
+  async function deleteTitleName() {
+    const result = await removeTitleNameRequest();
+    setOpen(false);
+    if (result) {
       return toast({
         title: "실패",
-        description: error.message,
+        description: result.error.message,
         variant: "destructive",
+      });
+    } else {
+      return toast({
+        title: "성공",
+        description: "칭호 삭제에 성공했습니다",
       });
     }
   }
@@ -125,15 +141,18 @@ export default function AddTitleNameBtn() {
             />
             <DialogFooter>
               <Button
-                onClick={async () => await removeTitleNameRequest()}
+                onClick={deleteTitleName}
                 type="button"
                 variant="destructive"
                 className="mr-auto"
+                disabled={form.formState.isSubmitting}
               >
                 칭호 삭제
               </Button>
               <div className="flex gap-2">
-                <Button type="submit">저장</Button>
+                <Button type="submit" disabled={form.formState.isSubmitting}>
+                  저장
+                </Button>
                 <DialogClose>
                   <Button type="button" variant="outline">
                     닫기

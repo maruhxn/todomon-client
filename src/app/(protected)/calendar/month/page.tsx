@@ -4,6 +4,7 @@ import { addMonths, format, startOfMonth, subMonths } from "date-fns";
 import Link from "next/link";
 
 import { getTodoByMonth } from "@/apis/repository/todo.repository";
+import { handleErrorForServerComponent } from "@/lib/error-handler";
 import { formatKoreanDate, parseYearMonth } from "@/lib/utils";
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 
@@ -23,6 +24,9 @@ export default async function MonthCalendarPage({
   const data = await getTodoByMonth(
     searchParams.yearMonth || format(date, "yyyy-MM")
   );
+  if ("error" in data) {
+    return handleErrorForServerComponent(data);
+  }
 
   return (
     <main className="flex-1 bg-background">

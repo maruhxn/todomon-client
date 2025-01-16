@@ -1,8 +1,13 @@
+import { getSession } from "@/apis/repository/global-action";
 import FAQSection from "@/components/main/FAQSection";
 import GoalSteps from "@/components/main/GoalSteps";
 import MainParagraph from "@/components/main/MainParagraph";
+import { redirect } from "next/navigation";
 
-export default function Home() {
+export default async function Home() {
+  const session = await getSession();
+  if (session) redirect("/calendar/month");
+
   return (
     <main className="font-body flex flex-col gap-8">
       <MainParagraph />

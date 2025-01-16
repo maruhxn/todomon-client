@@ -1,4 +1,4 @@
-import { getMemberId } from "@/apis/repository/global-action";
+import { getSession } from "@/apis/repository/global-action";
 import { getProfileRequest } from "@/apis/repository/members.repository";
 import AddTitleNameBtn from "@/components/profile/AddTitleNameBtn";
 import FollowInfoBtn from "@/components/profile/FollowInfoBtn";
@@ -13,63 +13,61 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
-import { cn, getProfileImage } from "@/lib/utils";
+import { handleErrorForServerComponent } from "@/lib/error-handler";
+import {
+  checkIsMyProfile,
+  cn,
+  getMemberId,
+  getProfileImage,
+} from "@/lib/utils";
 import { RepresentPetItem } from "@/types/pet";
 import { ProfileDto } from "@/types/profile";
 import { BadgeCheckIcon, ScrollTextIcon, StarIcon } from "lucide-react";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 
-async function checkIsMyProfile(memberId: string) {
-  const loginMemberId = await getMemberId();
-
-  if (!loginMemberId) redirect("/");
-
-  if (memberId === "my" || memberId === loginMemberId) {
-    return true;
-  } else {
-    return false;
-  }
-}
-
 export default async function ProfilePage({
   params,
 }: {
   params: { memberId: string };
 }) {
-  const isMyProfile = await checkIsMyProfile(params.memberId);
-  let memberId: number;
+  const userInfo = await getSession();
+  if (!userInfo) redirect("/");
 
-  if (isMyProfile) {
-    memberId = Number(await getMemberId());
-  } else {
-    memberId = Number(params.memberId);
+  const isMyProfile = checkIsMyProfile(params.memberId, userInfo.id);
+  const memberId = getMemberId(params.memberId, userInfo.id);
+
+  if (isNaN(memberId)) {
+    return notFound();
   }
 
-  const profile = await getProfileRequest(memberId);
-  if (!profile) return notFound();
+  const result = await getProfileRequest(memberId);
+
+  if ("error" in result) {
+    return handleErrorForServerComponent(result);
+  }
 
   return (
     <div className="bg-muted w-full min-h-screen flex justify-center items-center">
       <Card>
         <CardContent className="flex flex-col items-center p-6 md:flex-row md:items-start md:gap-6">
-          <UserAvatarSection profile={profile} />
+          <UserAvatarSection profile={result} />
           <div className="mt-4 md:mt-0 text-center md:text-left">
             <div className="flex justify-between items-center gap-2">
-              <UsernameSection profile={profile} />
+              <UsernameSection profile={result} />
               {isMyProfile ? (
                 <AddTitleNameBtn />
               ) : (
                 <FollowInfoBtn
                   memberId={memberId}
-                  followInfo={profile.followInfo}
+                  followInfo={result.followInfo}
                 />
               )}
             </div>
-            <FollowInfoBtns profile={profile} />
-            <UserDiligenceSection profile={profile} />
+            <FollowInfoBtns profile={result} />
+            <UserDiligenceSection profile={result} />
             <Separator className="my-4" />
-            <RepresentPetSection representPet={profile.representPetItem} />
+            <RepresentPetSection representPet={result.representPetItem} />
             {isMyProfile && (
               <>
                 <Separator className="my-4" />
@@ -83,7 +81,7 @@ export default async function ProfilePage({
                 </Link>
                 <Separator className="my-4" />
                 <div className="flex items-center gap-4">
-                  <UpdateProfileBtn profile={profile} />
+                  <UpdateProfileBtn profile={result} />
                   <WithdrawBtn memberId={memberId} />
                 </div>
               </>

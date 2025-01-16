@@ -7,3 +7,11 @@ export interface PageItem<T> {
   totalPage: number;
   totalElements: number;
 }
+
+// Server Action + useFormState 사용 시 반환타입
+export interface ErrorState {
+  error: {
+    statusCode: number;
+    message: string;
+  };
+}

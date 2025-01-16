@@ -1,3 +1,4 @@
+import { getSession } from "@/apis/repository/global-action";
 import {
   getAllPetsRequest,
   getPetCollectionRequest,
@@ -7,53 +8,40 @@ import DexPetCard from "@/components/pet/DexPetCard";
 import PetItemCard from "@/components/pet/MyPetCard";
 import RepresentPetState from "@/components/pet/RepresentPetState";
 import { Separator } from "@/components/ui/separator";
+import { handleErrorForServerComponent } from "@/lib/error-handler";
+import { getMemberId } from "@/lib/utils";
 import { PetDexItem } from "@/types/pet";
 import { CirclePlusIcon } from "lucide-react";
-import { cookies } from "next/headers";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 
 export default async function PetPage({
   params,
 }: {
   params: { memberId: string };
 }) {
-  let isMyProfile = false;
-  let memberId;
-
-  const loginMemberId = cookies().get("memberId")?.value ?? null;
-
-  if (
-    loginMemberId &&
-    (params.memberId === "my" || params.memberId === loginMemberId)
-  ) {
-    isMyProfile = true;
-    memberId = +loginMemberId;
-  } else {
-    memberId = Number(params.memberId);
-  }
-
+  const userInfo = await getSession();
+  if (!userInfo) redirect("/");
+  const memberId = getMemberId(params.memberId, userInfo.id);
   if (isNaN(memberId)) {
     return notFound();
   }
 
-  const allPets = await getAllPetsRequest();
-  if (!allPets) return notFound();
+  const allPetsResult = await getAllPetsRequest();
+  if ("error" in allPetsResult) {
+    return handleErrorForServerComponent(allPetsResult);
+  }
 
-  const petCollections = await getPetCollectionRequest(memberId);
-  if (!petCollections) return notFound();
+  const petCollectionsResult = await getPetCollectionRequest(memberId);
+  if ("error" in petCollectionsResult) {
+    return handleErrorForServerComponent(petCollectionsResult);
+  }
 
-  const petInfo = await getPetInfoRequest(memberId);
-  if (!petInfo) return notFound();
-
-  const remainingCapacity = petInfo.petHouseSize - petInfo.myPets.length;
-
-  const representPet = petInfo.myPets.find(
-    (myPet) => myPet.id === petInfo.representPetId
-  );
+  // 타입 좁히기: 별도의 변수에 재할당
+  const petCollections = petCollectionsResult as PetDexItem[];
 
   function isCollected(item: PetDexItem) {
-    return petCollections!.some(
+    return petCollections.some(
       (myCollectedPet) =>
         myCollectedPet.name === item.name &&
         myCollectedPet.rarity === item.rarity &&
@@ -61,6 +49,18 @@ export default async function PetPage({
         myCollectedPet.color === item.color
     );
   }
+
+  const petInfoResult = await getPetInfoRequest(memberId);
+  if ("error" in petInfoResult) {
+    return handleErrorForServerComponent(petInfoResult);
+  }
+
+  const remainingCapacity =
+    petInfoResult.petHouseSize - petInfoResult.myPets.length;
+
+  const representPet = petInfoResult.myPets.find(
+    (myPet) => myPet.id === petInfoResult.representPetId
+  );
 
   return (
     <div className="w-full min-h-screen py-8 flex flex-col items-center">
@@ -85,16 +85,17 @@ export default async function PetPage({
           {/* MY PET */}
           <div className="space-y-4">
             <div className="flex justify-between">
-              <span className="font-bold">{`나의 펫: ${petInfo?.myPets.length} / ${petInfo.petHouseSize}`}</span>
+              <span className="font-bold">{`나의 펫: ${petInfoResult?.myPets.length} / ${petInfoResult.petHouseSize}`}</span>
             </div>
             <div className="flex items-center flex-wrap gap-2">
-              {petInfo &&
-                petInfo.myPets.length > 0 &&
-                petInfo.myPets.map((myPetItem) => (
+              {petInfoResult.myPets.length > 0 &&
+                petInfoResult.myPets.map((myPetItem) => (
                   <PetItemCard
                     key={myPetItem.id}
                     petItem={myPetItem}
-                    isRepresentPet={myPetItem.id === petInfo.representPetId}
+                    isRepresentPet={
+                      myPetItem.id === petInfoResult.representPetId
+                    }
                   />
                 ))}
               {Array.from(
@@ -116,10 +117,10 @@ export default async function PetPage({
           <Separator />
           <div className="flex flex-col space-y-4">
             <div>
-              <span className="font-bold">{`펫 도감: ${petCollections?.length} / ${allPets?.length}`}</span>
+              <span className="font-bold">{`펫 도감: ${petCollectionsResult?.length} / ${allPetsResult?.length}`}</span>
             </div>
             <div className="flex items-center flex-wrap gap-2">
-              {allPets?.map((pet, index) => (
+              {allPetsResult.map((pet, index) => (
                 <DexPetCard
                   key={index}
                   pet={pet}

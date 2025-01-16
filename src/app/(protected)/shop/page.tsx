@@ -1,9 +1,14 @@
 import { getAllShopItemsRequest } from "@/apis/repository/item.repository";
 import ItemCard from "@/components/shop/ItemCard";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { handleErrorForServerComponent } from "@/lib/error-handler";
 
 export default async function ShopPage() {
   const shopItems = await getAllShopItemsRequest();
+  if ("error" in shopItems) {
+    return handleErrorForServerComponent(shopItems);
+  }
+
   const starPointItems = shopItems
     ? shopItems.filter((item) => item.moneyType === "STARPOINT")
     : [];

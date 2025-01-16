@@ -22,14 +22,7 @@ export default function UserAccountNav({ userInfo }: { userInfo: UserInfo }) {
       <DropdownMenuContent className="bg-white" align="end">
         <div className="flex items-center justify-start gap-2 p-2">
           <div className="flex flex-col space-y-1 leading-none">
-            {userInfo.username && (
-              <p className="font-medium">{userInfo.username}</p>
-            )}
-            {userInfo.email && (
-              <p className="w-[200px] truncate text-sm text-muted-foreground">
-                {userInfo.email}
-              </p>
-            )}
+            <p className="font-medium">{userInfo.username}</p>
           </div>
         </div>
         <DropdownMenuSeparator />

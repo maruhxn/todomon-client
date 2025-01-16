@@ -6,7 +6,7 @@ import {
 import { OrderItem } from "@/types/order";
 import { ResponseDto } from "@/types/response.dto";
 import { cookies } from "next/headers";
-import { getReq } from "./http.repository";
+import { getReqWithAuth } from "./http.repository";
 
 const ORDER_BASE_URL = "/api/orders";
 
@@ -24,19 +24,5 @@ interface GetAllMyOrdersResponseDto extends ResponseDto {
 }
 
 export const getMyOrdersRequest = async () => {
-  const accessToken = getAccessToken();
-  const memberId = getMemberId();
-
-  if (!accessToken || !memberId) return null;
-
-  const { data } = (await (
-    await getReq(ORDER_BASE_URL, {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-        Refresh: `Bearer ${getRefreshToken()}`,
-      },
-    })
-  ).json()) as GetAllMyOrdersResponseDto;
-
-  return data;
+  return await getReqWithAuth<OrderItem[]>(ORDER_BASE_URL);
 };

@@ -20,20 +20,19 @@ export default function WithdrawBtn({ memberId }: { memberId: number }) {
   const { toast } = useToast();
 
   async function withdraw() {
-    try {
-      await withdrawRequest(memberId);
-
-      toast({
+    const result = await withdrawRequest(memberId);
+    setOpen(false);
+    if (result) {
+      return toast({
+        title: "실패",
+        description: result.error.message,
+        variant: "destructive",
+      });
+    } else {
+      return toast({
         title: "성공",
         description: "투두 생성에 성공했습니다",
       });
-    } catch (error: any) {
-      return toast({
-        title: "실패",
-        description: error.message,
-        variant: "destructive",
-      });
-    } finally {
     }
   }
 

@@ -1,4 +1,4 @@
-import { getAuthRequest } from "@/apis/repository/auth.repository";
+import { getSession } from "@/apis/repository/global-action";
 import Header from "@/components/globals/Header";
 import { Toaster } from "@/components/ui/toaster";
 import { cn } from "@/lib/utils";
@@ -30,13 +30,12 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const userInfo = await getAuthRequest();
-
+  const userInfo = await getSession();
   return (
     <html lang="ko">
       <body
         className={cn(
-          "antialiased pb-20",
+          "antialiased pt-16 pb-20",
           fontHeading.variable,
           fontBody.variable
         )}

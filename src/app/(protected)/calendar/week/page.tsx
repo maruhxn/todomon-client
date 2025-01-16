@@ -1,6 +1,7 @@
 import { getTodoByWeek } from "@/apis/repository/todo.repository";
 import WeekCalendarTimeControlsSection from "@/components/calendar/week/WeekCalendarTimeControlSection";
 import WeekCalendarWeekDayBox from "@/components/calendar/week/WeekCalendarWeekDayBox";
+import { handleErrorForServerComponent } from "@/lib/error-handler";
 import { getStartOfWeek } from "@/lib/utils";
 import { TodoItem } from "@/types/todo";
 import { format } from "date-fns";
@@ -56,7 +57,10 @@ export default async function WeekCalendarPage({
   const date = searchParams.day ? new Date(searchParams.day) : new Date();
   const startOfWeek = getStartOfWeek(date);
   const sevenDays = getDatesForNextSevenDays(startOfWeek);
-  const todos = await getTodoByWeek(format(startOfWeek, "yyyy-MM-dd"));
+  let todos = await getTodoByWeek(format(startOfWeek, "yyyy-MM-dd"));
+  if ("error" in todos) {
+    return handleErrorForServerComponent(todos);
+  }
 
   const allDayTodos = todos
     ?.filter((todo) => todo.allDay)

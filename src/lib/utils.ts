@@ -29,6 +29,28 @@ function isSocialProfileImage(url: string) {
   return /^https?:\/\//i.test(url);
 }
 
+export function checkIsMyProfile(
+  pageMemberId: string,
+  loginMemberId: number
+): boolean {
+  if (pageMemberId === "my" || +pageMemberId === loginMemberId) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+export function getMemberId(pageMemberId: string, loginMemberId: number) {
+  let memberId: number;
+  if (checkIsMyProfile(pageMemberId, loginMemberId)) {
+    memberId = Number(loginMemberId);
+  } else {
+    memberId = Number(pageMemberId);
+  }
+
+  return memberId;
+}
+
 export function formatKoreanDate(date: Date): string {
   const year = format(date, "yyyy", { locale: ko });
   const month = format(date, "M", { locale: ko });
