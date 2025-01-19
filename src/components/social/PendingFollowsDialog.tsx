@@ -31,16 +31,15 @@ export default function PendingFollowsDialog({
   const { toast } = useToast();
 
   async function getReceivedStars() {
-    try {
-      const data = await getPendingFollowRequest(page);
-      setPendingFollowRequestPagingData(data);
-    } catch (error: any) {
+    const data = await getPendingFollowRequest(page);
+    if ("error" in data) {
       return toast({
         title: "실패",
-        description: error.message,
+        description: data.error.message,
         variant: "destructive",
       });
     }
+    setPendingFollowRequestPagingData(data);
   }
 
   useEffect(() => {
@@ -77,7 +76,7 @@ export default function PendingFollowsDialog({
             ))}
           {pendingFollowRequestPagingData.results.length <= 0 && (
             <span className="text-sm text-center font-semibold">
-              팔로우한 유저가 없습니다.
+              대기 중인 팔로우 요청이 없습니다.
             </span>
           )}
         </div>

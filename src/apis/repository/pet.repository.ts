@@ -1,26 +1,55 @@
 "use server";
 
+import TAGS from "@/lib/tags";
+import { ErrorState } from "@/types/globals";
 import { PetDexItem, PetInfo } from "@/types/pet";
+import { revalidateTag } from "next/cache";
 import { FeedValidator } from "../validators/pets.validator";
-import { getReqWithAuth, mutationJsonReqWithAuth } from "./http.repository";
+import {
+  getReq,
+  getReqWithAuth,
+  mutationJsonReqWithAuth,
+} from "./http.repository";
 
 const PET_BASE_URL = "/api/pets";
 const MY_PET_BASE_URL = "/api/pets/my";
 const MEMBER_PET_BASE_URL = (memberId: number) =>
   `/api/members/${memberId}/pets`;
 
+// === FOR ALL ===
+export const getAllPetsRequest = async () => {
+  return await getReq<PetDexItem[]>(PET_BASE_URL, {
+    cache: "force-cache",
+    next: { tags: [TAGS.PET_DEX] },
+  });
+};
+
+// === MY PET ===
 export const createPetRequest = async () => {
-  return await mutationJsonReqWithAuth(MY_PET_BASE_URL, null);
+  const res = await mutationJsonReqWithAuth(MY_PET_BASE_URL, null);
+  revalidateTag(TAGS.USER_PET);
+  return res;
 };
 
 export const feedToPetRequest = async (petId: number, foodCnt: number) => {
   const result = FeedValidator.safeParse(foodCnt);
-  if (!result.success) return { error: result.error.flatten().formErrors[0] };
+  if (!result.success)
+    return {
+      error: {
+        statusCode: 400,
+        message: result.error.flatten().formErrors[0],
+      },
+    } as ErrorState;
 
-  return await mutationJsonReqWithAuth(
+  const res = await mutationJsonReqWithAuth(
     MY_PET_BASE_URL + `/${petId}/feed?foodCnt=${foodCnt}`,
-    null
+    null,
+    { method: "PATCH" }
   );
+
+  revalidateTag(TAGS.USER_PET);
+
+  return res;
 };
 
 export const setRepresentPetRequest = async (petId: number | null) => {
@@ -33,19 +62,27 @@ export const setRepresentPetRequest = async (petId: number | null) => {
     url += `?${queryString}`;
   }
 
-  return await mutationJsonReqWithAuth(url, null);
+  const res = await mutationJsonReqWithAuth(url, null, { method: "PATCH" });
+  revalidateTag(TAGS.USER_PET);
+  return res;
 };
 
-export const getAllPetsRequest = async () => {
-  return await getReqWithAuth<PetDexItem[]>(PET_BASE_URL);
+// === MEMBER PET ===
+export const getOwnPetInfoRequest = async (memberId: number) => {
+  return await getReqWithAuth<PetInfo>(MEMBER_PET_BASE_URL(memberId), {
+    cache: "force-cache",
+    next: { tags: [TAGS.USER_PET] },
+  });
 };
 
 export const getPetCollectionRequest = async (memberId: number) => {
   return await getReqWithAuth<PetDexItem[]>(
-    MEMBER_PET_BASE_URL(memberId) + "/collections"
+    MEMBER_PET_BASE_URL(memberId) + "/collections",
+    {
+      cache: "force-cache",
+      next: {
+        tags: [TAGS.USER_PET],
+      },
+    }
   );
-};
-
-export const getPetInfoRequest = async (memberId: number) => {
-  return await getReqWithAuth<PetInfo>(MEMBER_PET_BASE_URL(memberId));
 };

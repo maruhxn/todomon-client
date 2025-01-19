@@ -8,7 +8,7 @@ import UserAccountNav from "./UserAccountNav";
 
 export default function Header({ userInfo }: { userInfo?: UserInfo | null }) {
   return (
-    <header className="fixed top-0 flex items-center justify-between bg-background px-6 border-b h-16 w-full">
+    <header className="fixed top-0 flex items-center justify-between bg-background px-6 border-b h-16 w-full z-40">
       <Link href="/" className="flex items-center gap-2" prefetch={false}>
         <span className="text-xl font-bold">TODOMON</span>
       </Link>

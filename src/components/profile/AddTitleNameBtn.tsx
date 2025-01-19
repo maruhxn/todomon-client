@@ -56,6 +56,7 @@ export default function AddTitleNameBtn() {
         variant: "destructive",
       });
     } else {
+      // router.refresh();
       return toast({
         title: "성공",
         description: "칭호 생성에 성공했습니다",

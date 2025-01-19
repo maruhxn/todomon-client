@@ -1,5 +1,8 @@
+"use client";
+
 import { Card, CardContent } from "@/components/ui/card";
 import { FollowingItem } from "@/types/social";
+import Link from "next/link";
 import ProfileIcon from "../globals/ProfileIcon";
 import FollowingBtnGroup from "./FollowingBtnGroup";
 
@@ -19,7 +22,10 @@ export default function FollowingListCard({
               key={following.followeeId}
               className="flex items-center justify-between"
             >
-              <div className="flex items-center space-x-4 py-2">
+              <Link
+                className="flex items-center space-x-4 py-2"
+                href={`/members/profile/${following.followeeId}`}
+              >
                 <ProfileIcon
                   username={following.username}
                   profileImage={following.profileImageUrl}
@@ -32,7 +38,7 @@ export default function FollowingListCard({
                   )}
                   <span className="font-semibold">{following.username}</span>
                 </p>
-              </div>
+              </Link>
               <FollowingBtnGroup memberId={following.followeeId} />
             </li>
           ))}

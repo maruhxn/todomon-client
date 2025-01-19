@@ -54,27 +54,10 @@ export async function requestWithAuth(
             },
           };
         }
-      case 403:
-        return {
-          error: {
-            statusCode: 403,
-            message: "권한이 없습니다.",
-          },
-        };
-      case 404:
-        const { message: notFoundErrorMessage } =
-          (await res.json()) as ErrorData;
-        return {
-          error: {
-            statusCode: 404,
-            message: notFoundErrorMessage,
-          },
-        };
       default:
-        const { message: unExpectedErrorMessage } =
-          (await res.json()) as ErrorData;
+        const { message } = (await res.json()) as ErrorData;
         return {
-          error: { statusCode: res.status, message: unExpectedErrorMessage },
+          error: { statusCode: res.status, message },
         };
     }
   } else {
@@ -82,11 +65,24 @@ export async function requestWithAuth(
   }
 }
 
-export async function getReq(url: string, options?: RequestInit) {
-  return await request(url, {
+export async function getReq<T>(
+  url: string,
+  options?: RequestInit
+): Promise<T | ErrorState> {
+  const res = await request(url, {
     ...options,
     method: "GET",
   });
+
+  if (!res.ok) {
+    const { message } = (await res.json()) as ErrorData;
+    return {
+      error: { statusCode: res.status, message },
+    };
+  }
+
+  const { data } = await res.json();
+  return data;
 }
 
 export async function getReqWithAuth<T>(
@@ -106,22 +102,6 @@ export async function getReqWithAuth<T>(
   return data as T;
 }
 
-export async function postReq<T>(
-  url: string,
-  payload: T,
-  options?: RequestInit
-) {
-  return await request(url, {
-    ...options,
-    method: "POST",
-    headers: {
-      ...options?.headers,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(payload),
-  });
-}
-
 export async function mutationJsonReqWithAuth<T>(
   url: string,
   payload: T,
@@ -129,7 +109,7 @@ export async function mutationJsonReqWithAuth<T>(
 ): Promise<ErrorState | undefined> {
   const res = await requestWithAuth(url, {
     ...options,
-    method: "POST",
+    method: options?.method ?? "POST",
     headers: {
       ...options?.headers,
       "Content-Type": "application/json",
@@ -155,93 +135,6 @@ export async function mutationFormReqWithAuth(
   if ("error" in res) {
     return res;
   }
-}
-
-export async function formPostReq(
-  url: string,
-  payload: FormData,
-  options?: RequestInit
-) {
-  return await request(url, {
-    ...options,
-    method: "POST",
-    body: payload,
-  });
-}
-
-export async function formPostReqWithAuth(
-  url: string,
-  payload: FormData,
-  options?: RequestInit
-) {
-  return await requestWithAuth(url, {
-    ...options,
-    method: "POST",
-    body: payload,
-  });
-}
-
-export async function patchReq<T>(
-  url: string,
-  payload: T,
-  options?: RequestInit
-) {
-  return await request(url, {
-    ...options,
-    method: "PATCH",
-    headers: {
-      ...options?.headers,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(payload),
-  });
-}
-
-export async function patchReqWithAuth<T>(
-  url: string,
-  payload: T,
-  options?: RequestInit
-) {
-  return await requestWithAuth(url, {
-    ...options,
-    method: "PATCH",
-    headers: {
-      ...options?.headers,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(payload),
-  });
-}
-
-export async function formPatchReq(
-  url: string,
-  payload: FormData,
-  options?: RequestInit
-) {
-  return await request(url, {
-    ...options,
-    method: "PATCH",
-    body: payload,
-  });
-}
-
-export async function formPatchReqWithAuth(
-  url: string,
-  payload: FormData,
-  options?: RequestInit
-) {
-  return await requestWithAuth(url, {
-    ...options,
-    method: "PATCH",
-    body: payload,
-  });
-}
-
-export async function deleteReq(url: string, options?: RequestInit) {
-  return await request(url, {
-    ...options,
-    method: "DELETE",
-  });
 }
 
 export async function deleteReqWithAuth(

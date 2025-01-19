@@ -31,16 +31,15 @@ export default function ReceivedStarsDialog({
   const { toast } = useToast();
 
   async function getReceivedStars() {
-    try {
-      const data = await getReceivedStarsRequest(page);
-      setReceivedStarsPagingData(data);
-    } catch (error: any) {
+    const data = await getReceivedStarsRequest(page);
+    if ("error" in data) {
       return toast({
         title: "실패",
-        description: error.message,
+        description: data.error.message,
         variant: "destructive",
       });
     }
+    setReceivedStarsPagingData(data as PageItem<ReceivedStarItem>);
   }
 
   useEffect(() => {
@@ -48,12 +47,11 @@ export default function ReceivedStarsDialog({
   }, [page]);
 
   async function receiveAllStars() {
-    try {
-      await receiveAllStarsRequest();
-    } catch (error: any) {
+    const err = await receiveAllStarsRequest();
+    if (err?.error) {
       return toast({
         title: "실패",
-        description: error.message,
+        description: err.error.message,
         variant: "destructive",
       });
     }

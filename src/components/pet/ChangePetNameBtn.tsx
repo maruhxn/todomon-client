@@ -45,27 +45,27 @@ export default function ChangePetNameBtn({ pet }: { pet: PetItem }) {
   });
 
   async function changePetName(payload: ChangePetNameRequest) {
-    try {
-      await applyItemRequest("펫 이름 변경권", {
-        type: "changePetName",
-        ...payload,
-      });
+    const err = await applyItemRequest("펫 이름 변경권", {
+      type: "changePetName",
+      ...payload,
+    });
 
-      form.reset();
+    form.reset();
 
-      setOpen(false);
+    setOpen(false);
 
-      toast({
-        title: "성공",
-        description: "이름 변경에 성공했습니다",
-      });
-    } catch (error: any) {
+    if (err?.error) {
       return toast({
         title: "실패",
-        description: error.message,
+        description: err.error.message,
         variant: "destructive",
       });
     }
+
+    return toast({
+      title: "성공",
+      description: "이름 변경에 성공했습니다",
+    });
   }
 
   return (
@@ -125,7 +125,9 @@ export default function ChangePetNameBtn({ pet }: { pet: PetItem }) {
               )}
             />
             <DialogFooter>
-              <Button type="submit">저장</Button>
+              <Button type="submit" disabled={form.formState.isSubmitting}>
+                저장
+              </Button>
               <DialogClose>
                 <Button type="button" variant="outline">
                   닫기

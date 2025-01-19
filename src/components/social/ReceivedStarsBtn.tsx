@@ -1,13 +1,19 @@
 import { getReceivedStarsRequest } from "@/apis/repository/star-trasactions.repository";
+import { handleErrorForServerComponent } from "@/lib/error-handler";
+import { PageItem } from "@/types/globals";
+import { ReceivedStarItem } from "@/types/social";
 import { StarsIcon } from "lucide-react";
-import { notFound } from "next/navigation";
 import { Button } from "../ui/button";
 import { Dialog, DialogTrigger } from "../ui/dialog";
 import ReceivedStarsDialog from "./ReceivedStarsDialog";
 
 export default async function ReceivedStarsBtn() {
-  const receivedStars = await getReceivedStarsRequest(0);
-  if (!receivedStars) notFound();
+  const result = await getReceivedStarsRequest(0);
+  if ("error" in result) {
+    handleErrorForServerComponent(result);
+  }
+
+  const receivedStars = result as PageItem<ReceivedStarItem>;
 
   return (
     <Dialog>

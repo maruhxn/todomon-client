@@ -20,20 +20,14 @@ export default function FeedBtn({ petId }: { petId: number }) {
   const { toast } = useToast();
 
   async function withdraw() {
-    try {
-      await feedToPetRequest(petId, feedCnt);
+    const err = await feedToPetRequest(petId, feedCnt);
 
-      toast({
-        title: "성공",
-        description: "먹이 주기에 성공했습니다",
-      });
-    } catch (error: any) {
+    if (err?.error) {
       return toast({
         title: "실패",
-        description: error.message,
+        description: err.error.message,
         variant: "destructive",
       });
-    } finally {
     }
   }
   return (

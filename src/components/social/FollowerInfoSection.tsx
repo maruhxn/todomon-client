@@ -18,21 +18,24 @@ export default function FollowerInfoSection({
     useState<PageItem<FollowerItem> | null>(null);
 
   async function getFollowers() {
-    try {
-      const data = await getFollowerRequest(memberId, page);
-      setFollowersPagingData(data);
-    } catch (error: any) {
+    const data = await getFollowerRequest(memberId, page);
+    if ("error" in data) {
       return toast({
         title: "실패",
-        description: error.message,
+        description: data.error.message,
         variant: "destructive",
       });
     }
+    setFollowersPagingData(data);
   }
 
   useEffect(() => {
     getFollowers();
+
+    console.log("fetch follower");
   }, [page]);
+
+  console.log(followersPagingData);
 
   if (!followersPagingData) return;
 

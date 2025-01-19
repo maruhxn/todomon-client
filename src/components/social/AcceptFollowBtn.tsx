@@ -7,40 +7,37 @@ import { useState } from "react";
 
 export default function AcceptFollowBtn({ followId }: { followId: number }) {
   const { toast } = useToast();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isAccepted, setIsAccepted] = useState<boolean | null>(null);
 
   async function acceptRequest() {
-    try {
-      await respondFollowRequest(followId, true);
-      setIsAccepted(true);
-      toast({
-        title: "성공",
-        description: "요청을 수락했습니다",
-      });
-    } catch (error: any) {
+    setIsLoading(true);
+    const err = await respondFollowRequest(followId, true);
+    if (err?.error) {
       return toast({
         title: "실패",
-        description: error.message,
+        description: err.error.message,
         variant: "destructive",
       });
     }
+    setIsAccepted(true);
+    setIsLoading(false);
+    window.location.reload();
   }
 
   async function rejectRequest() {
-    try {
-      await respondFollowRequest(followId, false);
-      setIsAccepted(false);
-      toast({
-        title: "성공",
-        description: "요청을 거절했습니다",
-      });
-    } catch (error: any) {
+    setIsLoading(true);
+    const err = await respondFollowRequest(followId, false);
+    if (err?.error) {
       return toast({
         title: "실패",
-        description: error.message,
+        description: err.error.message,
         variant: "destructive",
       });
     }
+    setIsAccepted(false);
+    setIsLoading(false);
+    window.location.reload();
   }
 
   return (
@@ -57,9 +54,11 @@ export default function AcceptFollowBtn({ followId }: { followId: number }) {
           />
         </>
       ) : (
-        <p className="text-sm font-semibold rounded-lg flex items-center gap-2 px-2 py-1 bg-muted text-muted-foreground">
-          {isAccepted === true ? "수락됨" : "거절됨"}
-        </p>
+        !isLoading && (
+          <p className="text-sm font-semibold rounded-lg flex items-center gap-2 px-2 py-1 bg-muted text-muted-foreground">
+            {isAccepted === true ? "수락됨" : "거절됨"}
+          </p>
+        )
       )}
     </div>
   );

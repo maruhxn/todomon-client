@@ -34,18 +34,17 @@ export default function SearchBar() {
       return;
     }
 
-    try {
-      setIsFetched(false);
-      const data = await searchMemberByKey(input);
-      setQueryResults(data ?? []);
-      setIsFetched(true);
-    } catch (error: any) {
+    setIsFetched(false);
+    const data = await searchMemberByKey(input);
+    setIsFetched(true);
+    if ("error" in data) {
       return toast({
         title: "실패",
-        description: error.message,
+        description: data.error.message,
         variant: "destructive",
       });
     }
+    setQueryResults(data ?? []);
   }
 
   const request = debounce(async () => {

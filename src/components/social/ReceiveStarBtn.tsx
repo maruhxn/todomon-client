@@ -11,25 +11,22 @@ interface ReceiveStarBtnProps {
 
 export default function ReceiveStarBtn({ transactionId }: ReceiveStarBtnProps) {
   const { toast } = useToast();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isReceived, setIsReceived] = useState<boolean>(false);
 
   async function receiveOneStar() {
-    try {
-      await receiveStarRequest(transactionId);
-      setIsReceived(true);
-      toast({
-        title: "성공",
-        description: "⭐️을 받았습니다",
-      });
-    } catch (error: any) {
+    setIsLoading(true);
+    const err = await receiveStarRequest(transactionId);
+    if (err?.error) {
       return toast({
         title: "실패",
-        description: error.message,
+        description: err.error.message,
         variant: "destructive",
       });
     }
+    setIsReceived(true);
+    setIsLoading(false);
   }
-
   return (
     <>
       {isReceived ? (
@@ -37,7 +34,12 @@ export default function ReceiveStarBtn({ transactionId }: ReceiveStarBtnProps) {
           OK
         </p>
       ) : (
-        <CheckIcon onClick={receiveOneStar} className="size-4 cursor-pointer" />
+        !isLoading && (
+          <CheckIcon
+            onClick={receiveOneStar}
+            className="size-4 cursor-pointer"
+          />
+        )
       )}
     </>
   );

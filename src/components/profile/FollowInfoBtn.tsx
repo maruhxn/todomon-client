@@ -75,7 +75,7 @@ export default function FollowInfoBtn({
     );
   } else {
     return (
-      <form action={async () => await sendFollowOrMatFollowRequest(memberId)}>
+      <form action={sendFollowOrMatFollowRequestWithId}>
         <Button className="bg-blue-500 hover:bg-blue-600">팔로우</Button>
       </form>
     );

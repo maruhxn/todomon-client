@@ -4,7 +4,10 @@ import {
   removeFollowerRequest,
   sendFollowOrMatFollowRequest,
 } from "@/apis/repository/follow.repository";
+import { useToast } from "@/hooks/use-toast";
 import { FollowerItem } from "@/types/social";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { Button } from "../ui/button";
 
 interface FollowerListButtonsProps {
@@ -14,28 +17,59 @@ interface FollowerListButtonsProps {
 export default function FollowerListButtons({
   follower,
 }: FollowerListButtonsProps) {
+  const router = useRouter();
+  const { toast } = useToast();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
   async function matFollow() {
-    await sendFollowOrMatFollowRequest(follower.followerId);
+    setIsLoading(true);
+    const err = await sendFollowOrMatFollowRequest(follower.followerId);
+    setIsLoading(false);
+    if (err?.error) {
+      return toast({
+        title: "실패",
+        description: err?.error.message,
+        variant: "destructive",
+      });
+    }
+    window.location.reload();
   }
 
   async function removeFollower() {
-    await removeFollowerRequest(follower.followerId);
+    setIsLoading(true);
+    const err = await removeFollowerRequest(follower.followerId);
+    setIsLoading(false);
+    if (err?.error) {
+      return toast({
+        title: "실패",
+        description: err?.error.message,
+        variant: "destructive",
+      });
+    }
+    window.location.reload();
   }
 
   return (
     <div className="flex gap-2">
       {follower?.matFollow === false && (
-        <form action={matFollow}>
-          <Button variant="default" className="text-xs">
-            맞팔
-          </Button>
-        </form>
-      )}
-      <form action={removeFollower}>
-        <Button variant="outline" className="text-xs">
-          삭제
+        <Button
+          onClick={matFollow}
+          variant="default"
+          className="text-xs"
+          disabled={isLoading}
+        >
+          맞팔
         </Button>
-      </form>
+      )}
+
+      <Button
+        onClick={removeFollower}
+        variant="outline"
+        className="text-xs"
+        disabled={isLoading}
+      >
+        삭제
+      </Button>
     </div>
   );
 }

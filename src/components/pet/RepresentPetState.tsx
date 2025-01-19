@@ -1,8 +1,8 @@
-import { MyPetItem } from "@/types/pet";
+import { PetItem } from "@/types/pet";
 import { Progress } from "../ui/progress";
 
 interface RepresentPetStateProps {
-  representPet: MyPetItem;
+  representPet: PetItem;
 }
 
 export default function RepresentPetState({

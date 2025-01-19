@@ -1,7 +1,9 @@
 "use server";
 
+import TAGS from "@/lib/tags";
 import { InventoryItemDto } from "@/types/item";
 import { ShopItem } from "@/types/shop";
+import { revalidateTag } from "next/cache";
 import { PurchaseStarPointItemRequest } from "../validators/shop.validator";
 import { getReqWithAuth, mutationJsonReqWithAuth } from "./http.repository";
 
@@ -9,7 +11,12 @@ const ITEM_BASE_URL = "/api/items";
 const PURCHASE_BASE_URL = "/api/purchase";
 
 export const getAllShopItemsRequest = async () => {
-  return await getReqWithAuth<ShopItem[]>(ITEM_BASE_URL);
+  return await getReqWithAuth<ShopItem[]>(ITEM_BASE_URL, {
+    cache: "force-cache",
+    next: {
+      tags: [TAGS.SHOP_ITEMS],
+    },
+  });
 };
 
 export interface PreparePaymentRequest {
@@ -66,8 +73,11 @@ export const applyItemRequest = async (
   itemName: string,
   payload: ItemEffectRequest
 ) => {
-  return await mutationJsonReqWithAuth(
+  const err = await mutationJsonReqWithAuth(
     ITEM_BASE_URL + `/use?itemName=${itemName}`,
     payload
   );
+  revalidateTag(TAGS.PROFILE);
+  revalidateTag(TAGS.USER_PET);
+  return err;
 };

@@ -1,8 +1,8 @@
 import { getSession } from "@/apis/repository/global-action";
 import {
   getAllPetsRequest,
+  getOwnPetInfoRequest,
   getPetCollectionRequest,
-  getPetInfoRequest,
 } from "@/apis/repository/pet.repository";
 import DexPetCard from "@/components/pet/DexPetCard";
 import PetItemCard from "@/components/pet/MyPetCard";
@@ -43,23 +43,21 @@ export default async function PetPage({
   function isCollected(item: PetDexItem) {
     return petCollections.some(
       (myCollectedPet) =>
-        myCollectedPet.name === item.name &&
         myCollectedPet.rarity === item.rarity &&
-        myCollectedPet.appearance === item.appearance &&
-        myCollectedPet.color === item.color
+        myCollectedPet.appearance === item.appearance
     );
   }
 
-  const petInfoResult = await getPetInfoRequest(memberId);
-  if ("error" in petInfoResult) {
-    return handleErrorForServerComponent(petInfoResult);
+  const ownPetInfoResult = await getOwnPetInfoRequest(memberId);
+  if ("error" in ownPetInfoResult) {
+    return handleErrorForServerComponent(ownPetInfoResult);
   }
 
   const remainingCapacity =
-    petInfoResult.petHouseSize - petInfoResult.myPets.length;
+    ownPetInfoResult.petHouseSize - ownPetInfoResult.myPets.length;
 
-  const representPet = petInfoResult.myPets.find(
-    (myPet) => myPet.id === petInfoResult.representPetId
+  const representPet = ownPetInfoResult.myPets.find(
+    (myPet) => myPet.id === ownPetInfoResult.representPetId
   );
 
   return (
@@ -70,7 +68,7 @@ export default async function PetPage({
         {/* REPRESENT PET */}
         <div className="space-y-4 bg-transparent">
           <span className="font-bold">대표 펫 설정</span>
-          <div className="w-[80%] bg-zinc-300 mx-auto aspect-square rounded-lg ring-2 ring-blue-300  flex justify-center items-center relative">
+          <div className="w-[80%] bg-zinc-300 mx-auto aspect-square rounded-lg ring-2 ring-zinc-300  flex justify-center items-center relative">
             {representPet ? (
               <RepresentPetState representPet={representPet} />
             ) : (
@@ -85,16 +83,16 @@ export default async function PetPage({
           {/* MY PET */}
           <div className="space-y-4">
             <div className="flex justify-between">
-              <span className="font-bold">{`나의 펫: ${petInfoResult?.myPets.length} / ${petInfoResult.petHouseSize}`}</span>
+              <span className="font-bold">{`나의 펫: ${ownPetInfoResult.myPets.length} / ${ownPetInfoResult.petHouseSize}`}</span>
             </div>
             <div className="flex items-center flex-wrap gap-2">
-              {petInfoResult.myPets.length > 0 &&
-                petInfoResult.myPets.map((myPetItem) => (
+              {ownPetInfoResult.myPets.length > 0 &&
+                ownPetInfoResult.myPets.map((myPetItem) => (
                   <PetItemCard
                     key={myPetItem.id}
                     petItem={myPetItem}
                     isRepresentPet={
-                      myPetItem.id === petInfoResult.representPetId
+                      myPetItem.id === ownPetInfoResult.representPetId
                     }
                   />
                 ))}

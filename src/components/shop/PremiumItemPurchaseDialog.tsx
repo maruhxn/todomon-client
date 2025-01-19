@@ -1,6 +1,6 @@
 "use client";
 
-import { getAuthRequest } from "@/apis/repository/auth.repository";
+import { getSession } from "@/apis/repository/global-action";
 import {
   PaymentRequest,
   preparePaymentRequest,
@@ -9,6 +9,7 @@ import {
 } from "@/apis/repository/item.repository";
 import { useToast } from "@/hooks/use-toast";
 import { ShopItem } from "@/types/shop";
+import { redirect } from "next/navigation";
 import Script from "next/script";
 import { useState } from "react";
 import { Button } from "../ui/button";
@@ -32,71 +33,77 @@ interface PremiumItemPurchaseDialogProps {
 export default function PremiumItemPurchaseDialog({
   item,
 }: PremiumItemPurchaseDialogProps) {
-  const { toast } = useToast();
   const initialValue = {
     merchant_uid: Date.now().toString(),
     amount: item.price,
     quantity: 1,
     itemId: item.id,
   };
+  const { toast } = useToast();
 
   const [payload, setPayload] = useState<PreparePaymentRequest>(initialValue);
 
   async function purchase() {
-    try {
-      const userInfo = await getAuthRequest();
+    const userInfo = await getSession();
 
-      if (!userInfo) throw new Error("유저 정보가 없습니다.");
+    if (!userInfo) redirect("/");
 
-      await preparePaymentRequest(payload);
+    const err1 = await preparePaymentRequest(payload);
 
-      const { merchant_uid, amount, quantity, itemId } = payload;
-
-      const { IMP } = window;
-
-      IMP.init(process.env.NEXT_PUBLIC_MERCHANT_ID);
-
-      IMP.request_pay(
-        {
-          pg: "html5_inicis.INIpayTest",
-          pay_method: "card",
-          name: item.name,
-          merchant_uid,
-          amount,
-          buyer_name: userInfo.username,
-        },
-        async (res: any) => {
-          try {
-            if (!res.success) throw new Error(res.error_msg);
-
-            const validationPayload: PaymentRequest = {
-              merchant_uid,
-              imp_uid: res.imp_uid,
-            };
-
-            await validatePaymentRequest(validationPayload);
-
-            return toast({
-              title: "결제 성공",
-            });
-          } catch (error: any) {
-            console.error("결제 실패:", error);
-            return toast({
-              title: "결제 실패",
-              description: error.message,
-              variant: "destructive",
-            });
-          }
-        }
-      );
-    } catch (error: any) {
-      console.error("결제 정보 사전 등록 실패:", error);
+    if (err1?.error) {
       return toast({
-        title: "결제 정보 사전 등록 실패",
-        description: error.message,
+        title: "결제 정보 등록 실패",
+        description: err1.error.message,
         variant: "destructive",
       });
     }
+
+    const { merchant_uid, amount, quantity, itemId } = payload;
+
+    const { IMP } = window;
+
+    IMP.init(process.env.NEXT_PUBLIC_MERCHANT_ID);
+
+    IMP.request_pay(
+      {
+        pg: "html5_inicis.INIpayTest",
+        pay_method: "card",
+        name: item.name,
+        merchant_uid,
+        amount,
+        buyer_name: userInfo.username,
+      },
+      async (res: any) => {
+        try {
+          if (!res.success) throw new Error(res.error_msg);
+
+          const validationPayload: PaymentRequest = {
+            merchant_uid,
+            imp_uid: res.imp_uid,
+          };
+
+          const err2 = await validatePaymentRequest(validationPayload);
+
+          if (err2?.error) {
+            return toast({
+              title: "결제 실패",
+              description: err2.error.message,
+              variant: "destructive",
+            });
+          }
+
+          return toast({
+            title: "결제 성공",
+          });
+        } catch (error: any) {
+          return toast({
+            title: "결제 실패",
+            description: error.message,
+            variant: "destructive",
+          });
+        }
+      }
+    );
   }
 
   return (

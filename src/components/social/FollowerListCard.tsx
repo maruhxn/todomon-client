@@ -1,5 +1,8 @@
+"use client";
+
 import { Card, CardContent } from "@/components/ui/card";
 import { FollowerItem } from "@/types/social";
+import Link from "next/link";
 import ProfileIcon from "../globals/ProfileIcon";
 import FollowerListButtons from "./FollowerListButtons";
 
@@ -17,7 +20,10 @@ export default function FollowerListCard({ followers }: FollowerListCardProps) {
               key={follower.followerId}
               className="flex items-center justify-between"
             >
-              <div className="flex items-center space-x-4 py-2">
+              <Link
+                className="flex items-center space-x-4 py-2"
+                href={`/members/profile/${follower.followerId}`}
+              >
                 <ProfileIcon
                   username={follower.username}
                   profileImage={follower.profileImageUrl}
@@ -30,7 +36,7 @@ export default function FollowerListCard({ followers }: FollowerListCardProps) {
                   )}
                   <span className="font-semibold">{follower.username}</span>
                 </p>
-              </div>
+              </Link>
               <FollowerListButtons follower={follower} />
             </li>
           ))}

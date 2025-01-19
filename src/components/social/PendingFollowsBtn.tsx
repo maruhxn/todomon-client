@@ -1,13 +1,19 @@
 import { getPendingFollowRequest } from "@/apis/repository/follow.repository";
+import { handleErrorForServerComponent } from "@/lib/error-handler";
+import { PageItem } from "@/types/globals";
+import { FollowRequestItem } from "@/types/social";
 import { UsersIcon } from "lucide-react";
-import { notFound } from "next/navigation";
 import { Button } from "../ui/button";
 import { Dialog, DialogTrigger } from "../ui/dialog";
 import PendingFollowsDialog from "./PendingFollowsDialog";
 
 export default async function PendingFollowsBtn() {
-  const pendingFollows = await getPendingFollowRequest(0);
-  if (!pendingFollows) notFound();
+  const result = await getPendingFollowRequest(0);
+  if ("error" in result) {
+    handleErrorForServerComponent(result);
+  }
+
+  const pendingFollows = result as PageItem<FollowRequestItem>;
 
   return (
     <Dialog>

@@ -1,34 +1,37 @@
 "use server";
 
+import TAGS from "@/lib/tags";
 import { PageItem } from "@/types/globals";
-import { ResponseDto } from "@/types/response.dto";
 import { FollowerItem, FollowingItem, FollowRequestItem } from "@/types/social";
+import { revalidateTag } from "next/cache";
 import {
   deleteReqWithAuth,
   getReqWithAuth,
   mutationJsonReqWithAuth,
-  patchReqWithAuth,
 } from "./http.repository";
 
 const FOLLOW_BASE_URL = "/api/social/follows";
 
-interface GetPendingFollowRequestsResponseDto extends ResponseDto {
-  data: PageItem<FollowRequestItem>;
-}
-
 export const sendFollowOrMatFollowRequest = async (memberId: number) => {
-  await mutationJsonReqWithAuth(FOLLOW_BASE_URL + `/${memberId}`, null);
+  const err = await mutationJsonReqWithAuth(
+    FOLLOW_BASE_URL + `/${memberId}`,
+    null
+  );
+  revalidateTag(TAGS.PROFILE);
+  return err;
 };
 
 export const getFollowerRequest = async (memberId: number, page: number) => {
   return await getReqWithAuth<PageItem<FollowerItem>>(
-    FOLLOW_BASE_URL + `/${memberId}/followers?pageNumber=${page}`
+    FOLLOW_BASE_URL + `/${memberId}/followers?pageNumber=${page}`,
+    { cache: "no-store" }
   );
 };
 
 export const getFollowingRequest = async (memberId: number, page: number) => {
   return await getReqWithAuth<PageItem<FollowingItem>>(
-    FOLLOW_BASE_URL + `/${memberId}/followings?pageNumber=${page}`
+    FOLLOW_BASE_URL + `/${memberId}/followings?pageNumber=${page}`,
+    { cache: "no-store" }
   );
 };
 
@@ -39,11 +42,20 @@ export const getPendingFollowRequest = async (page: number) => {
 };
 
 export const removeFollowerRequest = async (followerId: number) => {
-  await deleteReqWithAuth(FOLLOW_BASE_URL + `/${followerId}/remove`);
+  const err = await deleteReqWithAuth(
+    FOLLOW_BASE_URL + `/${followerId}/remove`
+  );
+
+  revalidateTag(TAGS.PROFILE);
+  return err;
 };
 
 export const unfollowRequest = async (followeeId: number) => {
-  await deleteReqWithAuth(FOLLOW_BASE_URL + `/${followeeId}/unfollow`);
+  const err = await deleteReqWithAuth(
+    FOLLOW_BASE_URL + `/${followeeId}/unfollow`
+  );
+  revalidateTag(TAGS.PROFILE);
+  return err;
 };
 
 export const respondFollowRequest = async (
@@ -56,12 +68,7 @@ export const respondFollowRequest = async (
 
   const url = `${FOLLOW_BASE_URL}/requests/${followId}/respond?${queryString}`;
 
-  await patchReqWithAuth(url, null);
-};
-
-export const matFollowRequest = async (followerId: number) => {
-  await mutationJsonReqWithAuth(
-    FOLLOW_BASE_URL + `/${followerId}/mutual`,
-    null
-  );
+  const err = await mutationJsonReqWithAuth(url, null, { method: "PATCH" });
+  revalidateTag(TAGS.PROFILE);
+  return err;
 };

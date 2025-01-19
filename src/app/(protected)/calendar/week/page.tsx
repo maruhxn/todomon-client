@@ -95,24 +95,6 @@ export default async function WeekCalendarPage({
             ))}
           </div>
         </div>
-
-        {/* <div className="border-l bg-muted/20 p-4">
-          <div className="mb-4 text-lg font-medium">Today Schedule</div>
-          <div className="space-y-4">
-            <div className="rounded-md bg-accent p-4 text-accent-foreground">
-              <div className="text-sm font-medium">Team Meeting</div>
-              <div className="text-sm">9:00 AM - 10:00 AM</div>
-            </div>
-            <div className="rounded-md bg-primary p-4 text-primary-foreground">
-              <div className="text-sm font-medium">Design Review</div>
-              <div className="text-sm">2:00 PM - 3:00 PM</div>
-            </div>
-            <div className="rounded-md bg-secondary p-4 text-secondary-foreground">
-              <div className="text-sm font-medium">Standup</div>
-              <div className="text-sm">4:30 PM - 5:30 PM</div>
-            </div>
-          </div>
-        </div> */}
       </div>
     </div>
   );

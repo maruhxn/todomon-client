@@ -15,11 +15,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useToast } from "@/hooks/use-toast";
 import {
   CollectedPetRankItem,
   DiligenceRankItem,
   TodoAchievementRankItem,
 } from "@/types/social";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import ProfileIcon from "../globals/ProfileIcon";
 
@@ -30,6 +32,8 @@ export type RANK_TYPE =
   | "collection";
 
 export default function RankingSection() {
+  const { toast } = useToast();
+  const router = useRouter();
   const [rankType, setRankType] = useState<RANK_TYPE | null>(null);
   const [overallRanking, setOverallRanking] = useState<
     | TodoAchievementRankItem[]
@@ -44,21 +48,26 @@ export default function RankingSection() {
       switch (rankType) {
         case "daily-achievement":
           data = await getOverallRankingOfAchievement("DAILY");
-          setOverallRanking(data);
-          return;
+          break;
         case "weekly-achievement":
           data = await getOverallRankingOfAchievement("WEEKLY");
-          setOverallRanking(data);
-          return;
+          break;
         case "diligence":
           data = await getOverallRankingOfDiligence();
-          setOverallRanking(data);
-          return;
+          break;
         case "collection":
           data = await getOverallRankingOfCollection();
-          setOverallRanking(data);
-          return;
+          break;
       }
+
+      if (data && "error" in data) {
+        return toast({
+          title: "실패",
+          description: data.error.message,
+          variant: "destructive",
+        });
+      }
+      setOverallRanking(data);
     }
 
     fetchData();
@@ -126,7 +135,10 @@ export default function RankingSection() {
                 overallRanking.map((rank, index) => (
                   <li
                     key={rank.memberId}
-                    className="flex items-center justify-between w-full"
+                    onClick={() =>
+                      router.push(`/members/profile/${rank.memberId}`)
+                    }
+                    className="flex items-center justify-between w-full cursor-pointer"
                   >
                     <div className="flex items-center space-x-4">
                       <ProfileIcon

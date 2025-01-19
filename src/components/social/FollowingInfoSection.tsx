@@ -18,24 +18,24 @@ export default function FollowingInfoSection({
     useState<PageItem<FollowingItem> | null>(null);
 
   async function getFollowings() {
-    try {
-      const data = await getFollowingRequest(memberId, page);
-      setFollowingsPagingData(data);
-    } catch (error: any) {
+    const data = await getFollowingRequest(memberId, page);
+    if ("error" in data) {
       return toast({
         title: "실패",
-        description: error.message,
+        description: data.error.message,
         variant: "destructive",
       });
     }
+    setFollowingsPagingData(data);
   }
 
   useEffect(() => {
     getFollowings();
+    console.log("fetch following");
   }, [page]);
 
   if (!followingsPagingData) return;
-
+  console.log(followingsPagingData);
   return (
     <section className="space-y-2">
       <h2 className="text-xl font-bold mt-4">팔로잉</h2>

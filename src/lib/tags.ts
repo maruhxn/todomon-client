@@ -1,3 +1,13 @@
-export const TAG_PROFILE = (memberId: number) => `profile-${memberId}`;
-export const TAG_ORDERS = (memberId: number) => `orders-${memberId};`;
-export const TAG_INVENTORY = (memberId: number) => `inventory-${memberId}`;
+const TAGS = {
+  TODO: "todo",
+  PROFILE: "profile",
+  USER_PET: "user-pet",
+  PET_DEX: "pet-dex",
+  SHOP_ITEMS: "shop-items",
+  FOLLOW_INFO: "follow-info",
+  FOLLOWER: "followers",
+  FOLLWING: "followings",
+  PENDING_FOLLOW_REQUEST: "pending-follow-requests",
+};
+
+export default TAGS;

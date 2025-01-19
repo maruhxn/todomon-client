@@ -1,4 +1,3 @@
-import { setRepresentPetRequest } from "@/apis/repository/pet.repository";
 import {
   HoverCard,
   HoverCardContent,
@@ -7,9 +6,10 @@ import {
 import { cn } from "@/lib/utils";
 
 import { PetItem } from "@/types/pet";
-import { BadgeCheckIcon, BadgeMinusIcon } from "lucide-react";
+import { BadgeCheckIcon } from "lucide-react";
 import ChangePetNameBtn from "./ChangePetNameBtn";
 import FeedBtn from "./FeedBtn";
+import SetRepresentPetBtn from "./SetRepresentPetBtn";
 
 interface PetInfoCardProps {
   petItem: PetItem;
@@ -20,15 +20,6 @@ export default function PetItemCard({
   petItem,
   isRepresentPet,
 }: PetInfoCardProps) {
-  async function setRepresentPet() {
-    "use server";
-    try {
-      await setRepresentPetRequest(isRepresentPet ? null : petItem.id);
-    } catch (error) {
-      console.error(error);
-    }
-  }
-
   return (
     <HoverCard>
       <HoverCardTrigger asChild>
@@ -46,15 +37,10 @@ export default function PetItemCard({
         </div>
       </HoverCardTrigger>
       <HoverCardContent className="w-52 text-xs">
-        <form className="flex justify-end" action={setRepresentPet}>
-          <button>
-            {isRepresentPet ? (
-              <BadgeMinusIcon className="size-5 cursor-pointer stroke-red-500 hover:stroke-white hover:fill-red-500 " />
-            ) : (
-              <BadgeCheckIcon className="size-5 cursor-pointer stroke-zinc-500 hover:stroke-zinc-700" />
-            )}
-          </button>
-        </form>
+        <SetRepresentPetBtn
+          petId={petItem.id}
+          isRepresentPet={isRepresentPet}
+        />
         <div className="flex flex-col gap-2 mt-3 mb-6">
           <div className="flex space-x-4">
             <span>이름 :</span>

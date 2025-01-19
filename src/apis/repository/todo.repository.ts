@@ -7,7 +7,9 @@ import {
   UpdateTodoRequest,
   UpdateTodoStatusRequest,
 } from "@/apis/validators/todo.validator";
+import TAGS from "@/lib/tags";
 import { TodoItem } from "@/types/todo";
+import { revalidateTag } from "next/cache";
 import {
   deleteReqWithAuth,
   getReqWithAuth,
@@ -17,23 +19,29 @@ import {
 const TODO_BASE_URL = "/api/todo";
 
 export const getTodoByDay = async (date: string) => {
-  return await getReqWithAuth<TodoItem[]>(TODO_BASE_URL + `/day?date=${date}`);
+  return await getReqWithAuth<TodoItem[]>(TODO_BASE_URL + `/day?date=${date}`, {
+    cache: "force-cache",
+    next: { tags: [TAGS.TODO] },
+  });
 };
 
 export const getTodoByWeek = async (startOfWeek: string) => {
   return await getReqWithAuth<TodoItem[]>(
-    TODO_BASE_URL + `/week?startOfWeek=${startOfWeek}`
+    TODO_BASE_URL + `/week?startOfWeek=${startOfWeek}`,
+    { cache: "force-cache", next: { tags: [TAGS.TODO] } }
   );
 };
 
 export const getTodoByMonth = async (yearMonth: string) => {
   return await getReqWithAuth<TodoItem[]>(
-    TODO_BASE_URL + `/month?yearMonth=${yearMonth}`
+    TODO_BASE_URL + `/month?yearMonth=${yearMonth}`,
+    { cache: "force-cache", next: { tags: [TAGS.TODO] } }
   );
 };
 
 export const createTodoRequest = async (payload: CreateTodoRequest) => {
-  return await mutationJsonReqWithAuth(TODO_BASE_URL, payload);
+  const err = await mutationJsonReqWithAuth(TODO_BASE_URL, payload);
+  revalidateTag(TAGS.TODO);
 };
 
 export const updateTodoRequest = async (
@@ -52,7 +60,9 @@ export const updateTodoRequest = async (
 
   const url = `${TODO_BASE_URL}/${objectId}?${queryParams}`;
 
-  return await mutationJsonReqWithAuth(url, payload);
+  const err = await mutationJsonReqWithAuth(url, payload, { method: "PATCH" });
+  revalidateTag(TAGS.TODO);
+  return err;
 };
 
 export const updateTodoStatusRequest = async (
@@ -62,7 +72,9 @@ export const updateTodoStatusRequest = async (
 ) => {
   const url = `${TODO_BASE_URL}/${objectId}/status?isInstance=${isInstance}`;
 
-  return await mutationJsonReqWithAuth(url, payload);
+  const err = await mutationJsonReqWithAuth(url, payload, { method: "PATCH" });
+  revalidateTag(TAGS.TODO);
+  return err;
 };
 
 export const deleteTodoRequest = async (
@@ -80,5 +92,7 @@ export const deleteTodoRequest = async (
 
   const url = `${TODO_BASE_URL}/${objectId}?${queryParams}`;
 
-  return await deleteReqWithAuth(url);
+  const err = await deleteReqWithAuth(url);
+  revalidateTag(TAGS.TODO);
+  return err;
 };

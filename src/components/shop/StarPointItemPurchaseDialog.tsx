@@ -1,6 +1,6 @@
 "use client";
 
-import { getAuthRequest } from "@/apis/repository/auth.repository";
+import { getSession } from "@/apis/repository/global-action";
 import {
   preparePaymentRequest,
   PreparePaymentRequest,
@@ -9,6 +9,7 @@ import {
 } from "@/apis/repository/item.repository";
 import { useToast } from "@/hooks/use-toast";
 import { ShopItem } from "@/types/shop";
+import { redirect } from "next/navigation";
 import { useState } from "react";
 import { Button } from "../ui/button";
 import {
@@ -27,7 +28,6 @@ interface StarPointItemPurchaseDialogProps {
 export default function StarPointItemPurchaseDialog({
   item,
 }: StarPointItemPurchaseDialogProps) {
-  const { toast } = useToast();
   const initialValue = {
     merchant_uid: Date.now().toString(),
     amount: item.price,
@@ -35,39 +35,50 @@ export default function StarPointItemPurchaseDialog({
     itemId: item.id,
   };
 
+  const { toast } = useToast();
+  const [payload, setPayload] = useState<PreparePaymentRequest>(initialValue);
+
   async function purchase() {
-    try {
-      const userInfo = await getAuthRequest();
+    const userInfo = await getSession();
 
-      if (!userInfo) throw new Error("유저 정보가 없습니다.");
+    if (!userInfo) redirect("/");
 
-      await preparePaymentRequest(payload);
+    const err1 = await preparePaymentRequest(payload);
 
-      try {
-        await purchaseStarPointItemRequest(payload); // 구매 요청
-
-        await validatePaymentRequest({ merchant_uid: payload.merchant_uid });
-
-        return toast({
-          title: "결제 성공",
-        });
-      } catch (error: any) {
-        return toast({
-          title: "결제 실패",
-          description: error.message,
-          variant: "destructive",
-        });
-      }
-    } catch (error: any) {
+    if (err1?.error) {
       return toast({
-        title: "실패",
-        description: error.message,
+        title: "결제 정보 등록 실패",
+        description: err1.error.message,
         variant: "destructive",
       });
     }
+
+    const err2 = await purchaseStarPointItemRequest(payload); // 구매 요청
+
+    if (err2?.error) {
+      return toast({
+        title: "구매 실패",
+        description: err2.error.message,
+        variant: "destructive",
+      });
+    }
+
+    const err3 = await validatePaymentRequest({
+      merchant_uid: payload.merchant_uid,
+    });
+
+    if (err3?.error) {
+      return toast({
+        title: "결제 검증 실패",
+        description: err3.error.message,
+        variant: "destructive",
+      });
+    }
+    return toast({
+      title: "구매 성공",
+    });
   }
 
-  const [payload, setPayload] = useState<PreparePaymentRequest>(initialValue);
   return (
     <DialogContent>
       <DialogHeader>
