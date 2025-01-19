@@ -28,11 +28,14 @@ declare const window: typeof globalThis & {
 
 interface PremiumItemPurchaseDialogProps {
   item: ShopItem;
+  setOpen: any;
 }
 
 export default function PremiumItemPurchaseDialog({
   item,
+  setOpen,
 }: PremiumItemPurchaseDialogProps) {
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const initialValue = {
     merchant_uid: Date.now().toString(),
     amount: item.price,
@@ -40,10 +43,10 @@ export default function PremiumItemPurchaseDialog({
     itemId: item.id,
   };
   const { toast } = useToast();
-
   const [payload, setPayload] = useState<PreparePaymentRequest>(initialValue);
 
   async function purchase() {
+    setIsLoading(true);
     const userInfo = await getSession();
 
     if (!userInfo) redirect("/");
@@ -92,15 +95,18 @@ export default function PremiumItemPurchaseDialog({
             });
           }
 
-          return toast({
+          toast({
             title: "결제 성공",
           });
         } catch (error: any) {
-          return toast({
+          toast({
             title: "결제 실패",
             description: error.message,
             variant: "destructive",
           });
+        } finally {
+          setOpen(false);
+          setIsLoading(false);
         }
       }
     );
@@ -108,7 +114,11 @@ export default function PremiumItemPurchaseDialog({
 
   return (
     <>
-      <DialogContent>
+      <DialogContent
+        onEscapeKeyDown={(e) => e.preventDefault()}
+        onPointerDown={(e) => e.preventDefault()}
+        onInteractOutside={(e) => e.preventDefault()}
+      >
         <DialogHeader>
           <DialogTitle>아이템 구매</DialogTitle>
         </DialogHeader>
@@ -125,9 +135,9 @@ export default function PremiumItemPurchaseDialog({
           }
         />
         <DialogFooter>
-          <DialogClose asChild>
-            <Button onClick={purchase}>구매하기</Button>
-          </DialogClose>
+          <Button onClick={purchase} disabled={isLoading}>
+            {isLoading ? "Loading..." : "구매하기"}
+          </Button>
           <DialogClose asChild>
             <Button type="button" variant="secondary">
               닫기

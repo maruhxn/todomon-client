@@ -1,3 +1,5 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -8,13 +10,14 @@ import {
 } from "@/components/ui/card";
 import { ShopItem } from "@/types/shop";
 import { Star } from "lucide-react";
+import { useState } from "react";
 import { Dialog, DialogTrigger } from "../ui/dialog";
 import PremiumItemPurchaseDialog from "./PremiumItemPurchaseDialog";
 import StarPointItemPurchaseDialog from "./StarPointItemPurchaseDialog";
 
 export default function ItemCard({ item }: { item: ShopItem }) {
+  const [open, setOpen] = useState<boolean>(false);
   const isRealMoneyItem = item.moneyType === "REAL_MONEY";
-
   return (
     <Card
       key={item.id}
@@ -44,14 +47,14 @@ export default function ItemCard({ item }: { item: ShopItem }) {
             </>
           )}
         </div>
-        <Dialog>
+        <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
             <Button className="w-full text-lg py-6">구매</Button>
           </DialogTrigger>
           {isRealMoneyItem ? (
-            <PremiumItemPurchaseDialog item={item} />
+            <PremiumItemPurchaseDialog item={item} setOpen={setOpen} />
           ) : (
-            <StarPointItemPurchaseDialog item={item} />
+            <StarPointItemPurchaseDialog item={item} setOpen={setOpen} />
           )}
         </Dialog>
       </CardContent>

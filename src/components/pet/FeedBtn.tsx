@@ -15,7 +15,6 @@ import {
 import { Input } from "../ui/input";
 
 export default function FeedBtn({ petId }: { petId: number }) {
-  const [open, setOpen] = useState<boolean>(false);
   const [feedCnt, setFeedCnt] = useState<number>(0);
   const { toast } = useToast();
 
@@ -31,7 +30,7 @@ export default function FeedBtn({ petId }: { petId: number }) {
     }
   }
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog>
       <DialogTrigger asChild>
         <Button className="w-full h-8">먹이 주기</Button>
       </DialogTrigger>

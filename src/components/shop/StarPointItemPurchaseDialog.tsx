@@ -23,11 +23,14 @@ import { Input } from "../ui/input";
 
 interface StarPointItemPurchaseDialogProps {
   item: ShopItem;
+  setOpen: any;
 }
 
 export default function StarPointItemPurchaseDialog({
   item,
+  setOpen,
 }: StarPointItemPurchaseDialogProps) {
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const initialValue = {
     merchant_uid: Date.now().toString(),
     amount: item.price,
@@ -39,6 +42,7 @@ export default function StarPointItemPurchaseDialog({
   const [payload, setPayload] = useState<PreparePaymentRequest>(initialValue);
 
   async function purchase() {
+    setIsLoading(true);
     const userInfo = await getSession();
 
     if (!userInfo) redirect("/");
@@ -46,6 +50,8 @@ export default function StarPointItemPurchaseDialog({
     const err1 = await preparePaymentRequest(payload);
 
     if (err1?.error) {
+      setOpen(false);
+      setIsLoading(false);
       return toast({
         title: "결제 정보 등록 실패",
         description: err1.error.message,
@@ -56,6 +62,8 @@ export default function StarPointItemPurchaseDialog({
     const err2 = await purchaseStarPointItemRequest(payload); // 구매 요청
 
     if (err2?.error) {
+      setOpen(false);
+      setIsLoading(false);
       return toast({
         title: "구매 실패",
         description: err2.error.message,
@@ -68,19 +76,28 @@ export default function StarPointItemPurchaseDialog({
     });
 
     if (err3?.error) {
+      setOpen(false);
+      setIsLoading(false);
       return toast({
         title: "결제 검증 실패",
         description: err3.error.message,
         variant: "destructive",
       });
     }
+
+    setOpen(false);
+    setIsLoading(false);
     return toast({
       title: "구매 성공",
     });
   }
 
   return (
-    <DialogContent>
+    <DialogContent
+      onEscapeKeyDown={(e) => e.preventDefault()}
+      onPointerDown={(e) => e.preventDefault()}
+      onInteractOutside={(e) => e.preventDefault()}
+    >
       <DialogHeader>
         <DialogTitle>아이템 구매</DialogTitle>
       </DialogHeader>
@@ -97,9 +114,9 @@ export default function StarPointItemPurchaseDialog({
         }
       />
       <DialogFooter>
-        <DialogClose asChild>
-          <Button onClick={purchase}>구매하기</Button>
-        </DialogClose>
+        <Button onClick={purchase} disabled={isLoading}>
+          {isLoading ? "Loading..." : "구매하기"}
+        </Button>
         <DialogClose asChild>
           <Button type="button" variant="secondary">
             닫기

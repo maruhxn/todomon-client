@@ -30,7 +30,7 @@ export const receiveStarRequest = async (transactionId: number) => {
     }
   );
 
-  revalidateTag(TAGS.PROFILE);
+  revalidateTag(TAGS.LOGIN_USER_INFO);
   return err;
 };
 
@@ -41,6 +41,6 @@ export const receiveAllStarsRequest = async () => {
     { method: "PATCH`" }
   );
 
-  revalidateTag(TAGS.PROFILE);
+  revalidateTag(TAGS.LOGIN_USER_INFO);
   return err;
 };

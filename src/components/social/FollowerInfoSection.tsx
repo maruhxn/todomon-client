@@ -31,11 +31,7 @@ export default function FollowerInfoSection({
 
   useEffect(() => {
     getFollowers();
-
-    console.log("fetch follower");
   }, [page]);
-
-  console.log(followersPagingData);
 
   if (!followersPagingData) return;
 

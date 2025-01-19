@@ -1,5 +1,6 @@
 const TAGS = {
   TODO: "todo",
+  LOGIN_USER_INFO: "login-uesr-info",
   PROFILE: "profile",
   USER_PET: "user-pet",
   PET_DEX: "pet-dex",

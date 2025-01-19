@@ -39,10 +39,12 @@ export interface PaymentRequest {
 }
 
 export const validatePaymentRequest = async (payload: PaymentRequest) => {
-  return await mutationJsonReqWithAuth(
+  const err = await mutationJsonReqWithAuth(
     PURCHASE_BASE_URL + "/payment/validate",
     payload
   );
+  revalidateTag(TAGS.LOGIN_USER_INFO);
+  return err;
 };
 
 export const purchaseStarPointItemRequest = async (
@@ -77,6 +79,7 @@ export const applyItemRequest = async (
     ITEM_BASE_URL + `/use?itemName=${itemName}`,
     payload
   );
+  revalidateTag(TAGS.LOGIN_USER_INFO);
   revalidateTag(TAGS.PROFILE);
   revalidateTag(TAGS.USER_PET);
   return err;

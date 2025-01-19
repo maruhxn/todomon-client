@@ -35,7 +35,7 @@ export const updateProfileRequest = async (
       method: "PATCH",
     }
   );
-
+  revalidateTag(TAGS.LOGIN_USER_INFO);
   revalidateTag(TAGS.PROFILE);
   return error;
 };
@@ -43,6 +43,7 @@ export const updateProfileRequest = async (
 // TODO: 캐시 삭제
 export const withdrawRequest = async (memberId: number) => {
   const error = await deleteReqWithAuth(MEMBERS_BASE_URL + `/${memberId}`);
+  revalidateTag(TAGS.LOGIN_USER_INFO);
   revalidateTag(TAGS.PROFILE);
   if (error) return error;
   else redirect("/");
@@ -56,6 +57,7 @@ export const searchMemberByKey = async (key: string) => {
 
 export const removeTitleNameRequest = async () => {
   const error = await deleteReqWithAuth(TITLENAME_BASE_URL);
+  revalidateTag(TAGS.LOGIN_USER_INFO);
   revalidateTag(TAGS.PROFILE);
   return error;
 };
