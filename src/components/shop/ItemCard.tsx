@@ -12,7 +12,7 @@ import { ShopItem } from "@/types/shop";
 import { Star } from "lucide-react";
 import { useState } from "react";
 import { Dialog, DialogTrigger } from "../ui/dialog";
-import PremiumItemPurchaseDialog from "./PremiumItemPurchaseDialog";
+import RealMoneyItemPurchaseDialog from "./PremiumItemPurchaseDialog";
 import StarPointItemPurchaseDialog from "./StarPointItemPurchaseDialog";
 
 export default function ItemCard({ item }: { item: ShopItem }) {
@@ -52,7 +52,7 @@ export default function ItemCard({ item }: { item: ShopItem }) {
             <Button className="w-full text-lg py-6">구매</Button>
           </DialogTrigger>
           {isRealMoneyItem ? (
-            <PremiumItemPurchaseDialog item={item} setOpen={setOpen} />
+            <RealMoneyItemPurchaseDialog item={item} setOpen={setOpen} />
           ) : (
             <StarPointItemPurchaseDialog item={item} setOpen={setOpen} />
           )}

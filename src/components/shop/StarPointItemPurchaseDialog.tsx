@@ -2,11 +2,9 @@
 
 import { getSession } from "@/apis/repository/global-action";
 import {
-  preparePaymentRequest,
   PreparePaymentRequest,
   purchaseStarPointItemRequest,
-  validatePaymentRequest,
-} from "@/apis/repository/item.repository";
+} from "@/apis/repository/payment.repository";
 import { useToast } from "@/hooks/use-toast";
 import { ShopItem } from "@/types/shop";
 import { redirect } from "next/navigation";
@@ -47,40 +45,14 @@ export default function StarPointItemPurchaseDialog({
 
     if (!userInfo) redirect("/");
 
-    const err1 = await preparePaymentRequest(payload);
+    const err = await purchaseStarPointItemRequest(payload); // 구매 요청
 
-    if (err1?.error) {
-      setOpen(false);
-      setIsLoading(false);
-      return toast({
-        title: "결제 정보 등록 실패",
-        description: err1.error.message,
-        variant: "destructive",
-      });
-    }
-
-    const err2 = await purchaseStarPointItemRequest(payload); // 구매 요청
-
-    if (err2?.error) {
+    if (err?.error) {
       setOpen(false);
       setIsLoading(false);
       return toast({
         title: "구매 실패",
-        description: err2.error.message,
-        variant: "destructive",
-      });
-    }
-
-    const err3 = await validatePaymentRequest({
-      merchant_uid: payload.merchant_uid,
-    });
-
-    if (err3?.error) {
-      setOpen(false);
-      setIsLoading(false);
-      return toast({
-        title: "결제 검증 실패",
-        description: err3.error.message,
+        description: err.error.message,
         variant: "destructive",
       });
     }

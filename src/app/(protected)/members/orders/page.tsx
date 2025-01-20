@@ -47,7 +47,7 @@ export default async function OrderListPage({
               </TableHeader>
               <TableBody>
                 {orders.map((order) => (
-                  <TableRowItem order={order} key={order.orderId} />
+                  <TableRowItem order={order} key={order.merchantUid} />
                 ))}
               </TableBody>
             </Table>

@@ -5,8 +5,9 @@ import {
   PaymentRequest,
   preparePaymentRequest,
   PreparePaymentRequest,
+  purchasePremiumItemRequest,
   validatePaymentRequest,
-} from "@/apis/repository/item.repository";
+} from "@/apis/repository/payment.repository";
 import { useToast } from "@/hooks/use-toast";
 import { ShopItem } from "@/types/shop";
 import { redirect } from "next/navigation";
@@ -26,15 +27,15 @@ declare const window: typeof globalThis & {
   IMP: any;
 };
 
-interface PremiumItemPurchaseDialogProps {
+interface RealMoneyItemPurchaseDialogProps {
   item: ShopItem;
   setOpen: any;
 }
 
-export default function PremiumItemPurchaseDialog({
+export default function RealMoneyItemPurchaseDialog({
   item,
   setOpen,
-}: PremiumItemPurchaseDialogProps) {
+}: RealMoneyItemPurchaseDialogProps) {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const initialValue = {
     merchant_uid: Date.now().toString(),
@@ -54,6 +55,8 @@ export default function PremiumItemPurchaseDialog({
     const err1 = await preparePaymentRequest(payload);
 
     if (err1?.error) {
+      setOpen(false);
+      setIsLoading(false);
       return toast({
         title: "결제 정보 등록 실패",
         description: err1.error.message,
@@ -61,7 +64,7 @@ export default function PremiumItemPurchaseDialog({
       });
     }
 
-    const { merchant_uid, amount, quantity, itemId } = payload;
+    const { merchant_uid, amount } = payload;
 
     const { IMP } = window;
 
@@ -88,13 +91,14 @@ export default function PremiumItemPurchaseDialog({
           const err2 = await validatePaymentRequest(validationPayload);
 
           if (err2?.error) {
-            return toast({
-              title: "결제 실패",
-              description: err2.error.message,
-              variant: "destructive",
-            });
+            throw new Error(err2.error.message);
           }
 
+          const err3 = await purchasePremiumItemRequest(merchant_uid);
+
+          if (err3?.error) {
+            throw new Error(err3.error.message);
+          }
           toast({
             title: "결제 성공",
           });
@@ -115,9 +119,9 @@ export default function PremiumItemPurchaseDialog({
   return (
     <>
       <DialogContent
-        onEscapeKeyDown={(e) => e.preventDefault()}
-        onPointerDown={(e) => e.preventDefault()}
-        onInteractOutside={(e) => e.preventDefault()}
+      // onEscapeKeyDown={(e) => e.preventDefault()}
+      // onPointerDown={(e) => e.preventDefault()}
+      // onInteractOutside={(e) => e.preventDefault()}
       >
         <DialogHeader>
           <DialogTitle>아이템 구매</DialogTitle>
