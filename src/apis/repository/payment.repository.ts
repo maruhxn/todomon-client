@@ -15,7 +15,12 @@ export interface PreparePaymentRequest {
 }
 
 export const preparePaymentRequest = async (payload: PreparePaymentRequest) => {
-  return await mutationJsonReqWithAuth(PAYMENT_BASE_URL + "/prepare", payload);
+  const err = await mutationJsonReqWithAuth(
+    PAYMENT_BASE_URL + "/prepare",
+    payload
+  );
+  revalidateTag(TAGS.LOGIN_USER_INFO);
+  return err;
 };
 
 export interface PaymentRequest {
@@ -45,7 +50,6 @@ export const purchaseStarPointItemRequest = async (
   payload: PurchaseStarPointItemRequest
 ) => {
   const err = await mutationJsonReqWithAuth("/api/purchase", payload);
-  revalidateTag(TAGS.LOGIN_USER_INFO);
   return err;
 };
 

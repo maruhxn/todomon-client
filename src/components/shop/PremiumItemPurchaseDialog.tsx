@@ -2,15 +2,12 @@
 
 import { getSession } from "@/apis/repository/global-action";
 import {
-  PaymentRequest,
   preparePaymentRequest,
   PreparePaymentRequest,
-  purchasePremiumItemRequest,
-  validatePaymentRequest,
 } from "@/apis/repository/payment.repository";
 import { useToast } from "@/hooks/use-toast";
 import { ShopItem } from "@/types/shop";
-import { redirect } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 import Script from "next/script";
 import { useState } from "react";
 import { Button } from "../ui/button";
@@ -44,6 +41,7 @@ export default function RealMoneyItemPurchaseDialog({
     itemId: item.id,
   };
   const { toast } = useToast();
+  const router = useRouter();
   const [payload, setPayload] = useState<PreparePaymentRequest>(initialValue);
 
   async function purchase() {
@@ -83,25 +81,26 @@ export default function RealMoneyItemPurchaseDialog({
         try {
           if (!res.success) throw new Error(res.error_msg);
 
-          const validationPayload: PaymentRequest = {
-            merchant_uid,
-            imp_uid: res.imp_uid,
-          };
+          // const validationPayload: PaymentRequest = {
+          //   merchant_uid,
+          //   imp_uid: res.imp_uid,
+          // };
 
-          const err2 = await validatePaymentRequest(validationPayload);
+          // const err2 = await validatePaymentRequest(validationPayload);
 
-          if (err2?.error) {
-            throw new Error(err2.error.message);
-          }
+          // if (err2?.error) {
+          //   throw new Error(err2.error.message);
+          // }
 
-          const err3 = await purchasePremiumItemRequest(merchant_uid);
+          // const err3 = await purchasePremiumItemRequest(merchant_uid);
 
-          if (err3?.error) {
-            throw new Error(err3.error.message);
-          }
+          // if (err3?.error) {
+          //   throw new Error(err3.error.message);
+          // }
           toast({
             title: "결제 성공",
           });
+          router.push("/payment/success");
         } catch (error: any) {
           toast({
             title: "결제 실패",
