@@ -13,7 +13,6 @@ import {
 const MEMBERS_BASE_URL = "/api/members";
 const TITLENAME_BASE_URL = "/api/members/titleNames/my";
 
-// TODO: 캐싱 추가
 export const getProfileRequest = async (memberId: number) => {
   return await getReqWithAuth<ProfileDto>(MEMBERS_BASE_URL + `/${memberId}`, {
     cache: "force-cache",
@@ -23,7 +22,6 @@ export const getProfileRequest = async (memberId: number) => {
   });
 };
 
-// TODO: 재검증 추가
 export const updateProfileRequest = async (
   memberId: number,
   formData: FormData
@@ -40,7 +38,6 @@ export const updateProfileRequest = async (
   return error;
 };
 
-// TODO: 캐시 삭제
 export const withdrawRequest = async (memberId: number) => {
   const error = await deleteReqWithAuth(MEMBERS_BASE_URL + `/${memberId}`);
   revalidateTag(TAGS.LOGIN_USER_INFO);

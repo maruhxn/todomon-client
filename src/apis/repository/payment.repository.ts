@@ -23,28 +23,28 @@ export const preparePaymentRequest = async (payload: PreparePaymentRequest) => {
   return err;
 };
 
-export interface PaymentRequest {
-  merchant_uid: string;
-  imp_uid: string;
-}
+// export interface PaymentRequest {
+//   merchant_uid: string;
+//   imp_uid: string;
+// }
 
-export const validatePaymentRequest = async (payload: PaymentRequest) => {
-  const err = await mutationJsonReqWithAuth(
-    PAYMENT_BASE_URL + "/complete",
-    payload
-  );
-  revalidateTag(TAGS.LOGIN_USER_INFO);
-  return err;
-};
+// export const validatePaymentRequest = async (payload: PaymentRequest) => {
+//   const err = await mutationJsonReqWithAuth(
+//     PAYMENT_BASE_URL + "/complete",
+//     payload
+//   );
+//   revalidateTag(TAGS.LOGIN_USER_INFO);
+//   return err;
+// };
 
-export const purchasePremiumItemRequest = async (merchantUid: string) => {
-  const err = await mutationJsonReqWithAuth(
-    PAYMENT_BASE_URL + `/purchase-item/${merchantUid}`,
-    null
-  );
-  revalidateTag(TAGS.LOGIN_USER_INFO);
-  return err;
-};
+// export const purchasePremiumItemRequest = async (merchantUid: string) => {
+//   const err = await mutationJsonReqWithAuth(
+//     PAYMENT_BASE_URL + `/purchase-item/${merchantUid}`,
+//     null
+//   );
+//   revalidateTag(TAGS.LOGIN_USER_INFO);
+//   return err;
+// };
 
 export const purchaseStarPointItemRequest = async (
   payload: PurchaseStarPointItemRequest
