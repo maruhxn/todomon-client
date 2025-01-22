@@ -1,24 +1,13 @@
 "use client";
 
 import { getSession } from "@/apis/repository/global-action";
-import {
-  preparePaymentRequest,
-  PreparePaymentRequest,
-} from "@/apis/repository/payment.repository";
+import { preparePaymentRequest } from "@/apis/repository/payment.repository";
 import { useToast } from "@/hooks/use-toast";
 import { ShopItem } from "@/types/shop";
 import { redirect, useRouter } from "next/navigation";
 import Script from "next/script";
 import { useState } from "react";
 import { Button } from "../ui/button";
-import {
-  DialogClose,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "../ui/dialog";
-import { Input } from "../ui/input";
 
 declare const window: typeof globalThis & {
   IMP: any;
@@ -26,23 +15,15 @@ declare const window: typeof globalThis & {
 
 interface RealMoneyItemPurchaseDialogProps {
   item: ShopItem;
-  setOpen: any;
 }
 
 export default function RealMoneyItemPurchaseDialog({
   item,
-  setOpen,
 }: RealMoneyItemPurchaseDialogProps) {
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const initialValue = {
-    merchant_uid: Date.now().toString(),
-    amount: item.price,
-    quantity: 1,
-    itemId: item.id,
-  };
+
   const { toast } = useToast();
   const router = useRouter();
-  const [payload, setPayload] = useState<PreparePaymentRequest>(initialValue);
 
   async function purchase() {
     setIsLoading(true);
@@ -50,14 +31,20 @@ export default function RealMoneyItemPurchaseDialog({
 
     if (!userInfo) redirect("/");
 
-    const err1 = await preparePaymentRequest(payload);
+    const payload = {
+      merchant_uid: Date.now().toString(),
+      amount: item.price,
+      quantity: 1,
+      itemId: item.id,
+    };
 
-    if (err1?.error) {
-      setOpen(false);
+    const err = await preparePaymentRequest(payload);
+
+    if (err?.error) {
       setIsLoading(false);
       return toast({
         title: "결제 정보 등록 실패",
-        description: err1.error.message,
+        description: err.error.message,
         variant: "destructive",
       });
     }
@@ -80,23 +67,6 @@ export default function RealMoneyItemPurchaseDialog({
       async (res: any) => {
         try {
           if (!res.success) throw new Error(res.error_msg);
-
-          // const validationPayload: PaymentRequest = {
-          //   merchant_uid,
-          //   imp_uid: res.imp_uid,
-          // };
-
-          // const err2 = await validatePaymentRequest(validationPayload);
-
-          // if (err2?.error) {
-          //   throw new Error(err2.error.message);
-          // }
-
-          // const err3 = await purchasePremiumItemRequest(merchant_uid);
-
-          // if (err3?.error) {
-          //   throw new Error(err3.error.message);
-          // }
           toast({
             title: "결제 성공",
           });
@@ -108,7 +78,6 @@ export default function RealMoneyItemPurchaseDialog({
             variant: "destructive",
           });
         } finally {
-          setOpen(false);
           setIsLoading(false);
         }
       }
@@ -117,37 +86,13 @@ export default function RealMoneyItemPurchaseDialog({
 
   return (
     <>
-      <DialogContent
-      // onEscapeKeyDown={(e) => e.preventDefault()}
-      // onPointerDown={(e) => e.preventDefault()}
-      // onInteractOutside={(e) => e.preventDefault()}
+      <Button
+        className="w-full text-lg py-6"
+        onClick={purchase}
+        disabled={isLoading}
       >
-        <DialogHeader>
-          <DialogTitle>아이템 구매</DialogTitle>
-        </DialogHeader>
-        <Input
-          type="number"
-          min={1}
-          value={payload.quantity}
-          onChange={(e) =>
-            setPayload({
-              ...payload,
-              quantity: +e.target.value,
-              amount: item.price * +e.target.value,
-            })
-          }
-        />
-        <DialogFooter>
-          <Button onClick={purchase} disabled={isLoading}>
-            {isLoading ? "Loading..." : "구매하기"}
-          </Button>
-          <DialogClose asChild>
-            <Button type="button" variant="secondary">
-              닫기
-            </Button>
-          </DialogClose>
-        </DialogFooter>
-      </DialogContent>
+        {isLoading ? "Loading..." : "구매"}
+      </Button>
       <Script src="https://cdn.iamport.kr/v1/iamport.js" />
     </>
   );

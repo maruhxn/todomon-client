@@ -42,8 +42,9 @@ export default function WeekCalendarNonAllDayTodoBox({
       <DialogTrigger asChild>
         <div
           className={cn(
-            "flex flex-col rounded-md bg-accent p-2 text-sm text-accent-foreground space-y-1 text-white cursor-pointer hover:scale-y-105",
-            todo.done && "opacity-30"
+            "flex flex-col rounded-md bg-accent p-2 text-sm text-accent-foreground space-y-1 cursor-pointer hover:scale-y-105 border-zinc-300",
+            todo.done && "opacity-30",
+            todo.color === "#000000" ? "text-white" : "text-black"
           )}
           style={{
             backgroundColor: todo.color,

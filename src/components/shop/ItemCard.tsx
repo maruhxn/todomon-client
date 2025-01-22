@@ -47,16 +47,17 @@ export default function ItemCard({ item }: { item: ShopItem }) {
             </>
           )}
         </div>
-        <Dialog open={open} onOpenChange={setOpen}>
-          <DialogTrigger asChild>
-            <Button className="w-full text-lg py-6">구매</Button>
-          </DialogTrigger>
-          {isRealMoneyItem ? (
-            <RealMoneyItemPurchaseDialog item={item} setOpen={setOpen} />
-          ) : (
+
+        {isRealMoneyItem ? (
+          <RealMoneyItemPurchaseDialog item={item} />
+        ) : (
+          <Dialog open={open} onOpenChange={setOpen}>
+            <DialogTrigger asChild>
+              <Button className="w-full text-lg py-6">구매</Button>
+            </DialogTrigger>
             <StarPointItemPurchaseDialog item={item} setOpen={setOpen} />
-          )}
-        </Dialog>
+          </Dialog>
+        )}
       </CardContent>
     </Card>
   );

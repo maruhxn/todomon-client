@@ -24,7 +24,11 @@ export default function MonthCalendarTodoBadge({
     >
       <DialogTrigger>
         <Badge
-          className={cn("z-10 w-full", todo.done && "opacity-30")}
+          className={cn(
+            "z-10 w-full border-zinc-300",
+            todo.done && "opacity-30",
+            todo.color === "#000000" ? "text-white" : "text-black"
+          )}
           style={{
             backgroundColor: todo.color,
           }}

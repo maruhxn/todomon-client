@@ -29,8 +29,9 @@ export default function DayCalendarTodoBox({
         <div
           key={todo.todoId}
           className={cn(
-            "absolute bg-primary text-primary-foreground rounded-md p-2 flex justify-center items-center cursor-pointer hover:scale-y-105",
-            todo.done && "opacity-30"
+            "absolute bg-primary rounded-md p-2 flex justify-center items-center cursor-pointer hover:scale-y-105 border-zinc-300",
+            todo.done && "opacity-30",
+            todo.color === "#000000" ? "text-white" : "text-black"
           )}
           style={{
             top: `${position.top}%`,

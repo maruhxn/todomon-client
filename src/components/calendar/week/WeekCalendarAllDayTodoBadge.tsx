@@ -22,8 +22,9 @@ export default function WeekCalendarAllDayTodoBadge({
       <DialogTrigger asChild>
         <Badge
           className={cn(
-            "w-full cursor-pointer hover:scale-y-105",
-            allDayTodo.done && "opacity-30"
+            "w-full cursor-pointer hover:scale-y-105 border-zinc-300",
+            allDayTodo.done && "opacity-30",
+            allDayTodo.color === "#000000" ? "text-white" : "text-black"
           )}
           style={{
             backgroundColor: allDayTodo.color,

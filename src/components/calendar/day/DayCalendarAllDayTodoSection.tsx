@@ -14,15 +14,15 @@ export default function DayCalendarAllDayTodoBox({
   allDayTodo,
 }: DayCalendarAllDayTodoBoxProps) {
   const [updateDialogOpen, setUpdateDialogOpen] = useState<boolean>(false);
-
   return (
     <Dialog open={updateDialogOpen} onOpenChange={setUpdateDialogOpen}>
       <DialogTrigger asChild>
         <div
           key={allDayTodo.todoId}
           className={cn(
-            "w-full text-white pl-10 py-1 rounded-md cursor-pointer hover:scale-y-105",
-            allDayTodo.done && "opacity-30"
+            "w-full pl-10 py-1 rounded-md cursor-pointer hover:scale-y-105 border-zinc-300",
+            allDayTodo.done && "opacity-30",
+            allDayTodo.color === "#000000" ? "text-white" : "text-black"
           )}
           style={{
             backgroundColor: allDayTodo.color,

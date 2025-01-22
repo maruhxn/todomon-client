@@ -11,6 +11,7 @@ export default function ProfileIcon({
   username,
   profileImage,
 }: ProfileIconProps) {
+  // console.log(getProfileImage(profileImage));
   return (
     <Avatar>
       <AvatarImage

@@ -168,7 +168,7 @@ function RepresentPetSection({
       <BadgeCheckIcon className="size-4 text-black fill-yellow-500" />
       {representPet ? (
         <div
-          className={cn("flex gap-2 font-medium items-center")}
+          className={cn("flex gap-2 font-medium items-center text-shadow-sm")}
           style={{ color: representPet.color }}
         >
           <span className="font-bold">

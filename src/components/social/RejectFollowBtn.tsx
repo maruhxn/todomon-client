@@ -1,6 +1,6 @@
 "use client";
 
-import { respondFollowRequest } from "@/apis/repository/social.repository";
+import { respondFollowRequest } from "@/apis/repository/follow.repository";
 import { XIcon } from "lucide-react";
 
 export default function RejectFollowBtn({ followId }: { followId: number }) {

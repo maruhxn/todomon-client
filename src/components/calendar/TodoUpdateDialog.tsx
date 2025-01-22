@@ -153,110 +153,109 @@ export default function TodoUpdateDialog({
     color,
     repeatInfoReqItem,
   }: UpdateTodoRequest) {
-    try {
-      const payload = {
-        content,
-        startAt: startAt && getDateFromTimeString(date, startAt),
-        endAt: endAt && getDateFromTimeString(date, endAt),
-        isAllDay,
-        color,
-        repeatInfoReqItem: isRepeatInfoUpdating
-          ? repeatInfoReqItem
-            ? {
-                frequency: repeatInfoReqItem.frequency,
-                interval: repeatInfoReqItem.interval,
-                byMonthDay: repeatInfoReqItem?.byMonthDay
-                  ? repeatInfoReqItem.byMonthDay.getDate()
-                  : null,
-                byDay: repeatInfoReqItem?.byDay
-                  ? repeatInfoReqItem.byDay.join(",")
-                  : null,
-                until: repeatInfoReqItem.until
-                  ? getISOString(repeatInfoReqItem.until)
-                  : null,
-                count: repeatInfoReqItem.count ?? null,
-              }
-            : null
-          : null,
-      };
+    const payload = {
+      content,
+      startAt: startAt && getDateFromTimeString(date, startAt),
+      endAt: endAt && getDateFromTimeString(date, endAt),
+      isAllDay,
+      color,
+      repeatInfoReqItem: isRepeatInfoUpdating
+        ? repeatInfoReqItem
+          ? {
+              frequency: repeatInfoReqItem.frequency,
+              interval: repeatInfoReqItem.interval,
+              byMonthDay: repeatInfoReqItem?.byMonthDay
+                ? repeatInfoReqItem.byMonthDay.getDate()
+                : null,
+              byDay: repeatInfoReqItem?.byDay
+                ? repeatInfoReqItem.byDay.join(",")
+                : null,
+              until: repeatInfoReqItem.until
+                ? getISOString(repeatInfoReqItem.until)
+                : null,
+              count: repeatInfoReqItem.count ?? null,
+            }
+          : null
+        : null,
+    };
 
-      const queryParameter = {
-        isInstance,
-        targetType,
-      } as UpdateAndDeleteTodoQueryParams;
+    const queryParameter = {
+      isInstance,
+      targetType,
+    } as UpdateAndDeleteTodoQueryParams;
 
-      await updateTodoRequest(
-        todo.todoId,
-        payload as UpdateTodoRequest,
-        queryParameter
-      );
+    const err = await updateTodoRequest(
+      todo.todoId,
+      payload as UpdateTodoRequest,
+      queryParameter
+    );
 
-      openControlFn(false);
+    openControlFn(false);
 
-      form.reset();
+    form.reset();
 
-      toast({
-        title: "성공",
-        description: "투두 수정에 성공했습니다",
-      });
-    } catch (error: any) {
+    if (err?.error) {
       return toast({
         title: "실패",
-        description: error.message,
+        description: err.error.message,
         variant: "destructive",
       });
     }
+
+    toast({
+      title: "성공",
+      description: "투두 수정에 성공했습니다",
+    });
   }
 
   async function updateStatus() {
-    try {
-      const payload: UpdateTodoStatusRequest = {
-        isDone: !todo.done,
-      };
+    const payload: UpdateTodoStatusRequest = {
+      isDone: !todo.done,
+    };
 
-      await updateTodoStatusRequest(todo.todoId, payload, isInstance);
+    const err = await updateTodoStatusRequest(todo.todoId, payload, isInstance);
 
-      openControlFn(false);
+    openControlFn(false);
 
-      form.reset();
+    form.reset();
 
-      toast({
-        title: "성공",
-        description: "투두 상태 업데이트에 성공했습니다",
-      });
-    } catch (error: any) {
+    if (err?.error) {
       return toast({
         title: "실패",
-        description: error.message,
+        description: err.error.message,
         variant: "destructive",
       });
     }
+
+    toast({
+      title: "성공",
+      description: "투두 상태 업데이트에 성공했습니다",
+    });
   }
 
   async function deleteTodo() {
-    try {
-      const queryParameter = {
-        isInstance,
-        targetType,
-      } as UpdateAndDeleteTodoQueryParams;
+    const queryParameter = {
+      isInstance,
+      targetType,
+    } as UpdateAndDeleteTodoQueryParams;
 
-      await deleteTodoRequest(todo.todoId, queryParameter);
+    const err = await deleteTodoRequest(todo.todoId, queryParameter);
 
-      openControlFn(false);
+    openControlFn(false);
 
-      form.reset();
+    form.reset();
 
-      toast({
-        title: "성공",
-        description: "투두 삭제에 성공했습니다",
-      });
-    } catch (error: any) {
+    if (err?.error) {
       return toast({
         title: "실패",
-        description: error.message,
+        description: err.error.message,
         variant: "destructive",
       });
     }
+    toast({
+      title: "성공",
+      description: "투두 삭제에 성공했습니다",
+    });
   }
   useEffect(() => {
     if (isRepeatInfoUpdating && todo.repeatInfoItem) {

@@ -42,6 +42,7 @@ export const getTodoByMonth = async (yearMonth: string) => {
 export const createTodoRequest = async (payload: CreateTodoRequest) => {
   const err = await mutationJsonReqWithAuth(TODO_BASE_URL, payload);
   revalidateTag(TAGS.TODO);
+  return err;
 };
 
 export const updateTodoRequest = async (

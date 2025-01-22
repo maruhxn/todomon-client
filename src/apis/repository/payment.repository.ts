@@ -19,6 +19,8 @@ export const preparePaymentRequest = async (payload: PreparePaymentRequest) => {
     PAYMENT_BASE_URL + "/prepare",
     payload
   );
+  revalidateTag(TAGS.USER_PET);
+  revalidateTag(TAGS.PROFILE);
   revalidateTag(TAGS.LOGIN_USER_INFO);
   return err;
 };
@@ -50,12 +52,17 @@ export const purchaseStarPointItemRequest = async (
   payload: PurchaseStarPointItemRequest
 ) => {
   const err = await mutationJsonReqWithAuth("/api/purchase", payload);
+  revalidateTag(TAGS.USER_PET);
+  revalidateTag(TAGS.PROFILE);
+  revalidateTag(TAGS.LOGIN_USER_INFO);
   return err;
 };
 
 export const refundRequest = async (merchantUid: string) => {
-  return await mutationJsonReqWithAuth(
+  const err = await mutationJsonReqWithAuth(
     PAYMENT_BASE_URL + `/cancel/${merchantUid}`,
     null
   );
+  revalidateTag(TAGS.LOGIN_USER_INFO);
+  return err;
 };

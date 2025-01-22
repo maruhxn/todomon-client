@@ -1,10 +1,6 @@
 "use server";
 
-import {
-  ErrorData,
-  getReq,
-  getReqWithAuth,
-} from "@/apis/repository/http.repository";
+import { getReq, getReqWithAuth } from "@/apis/repository/http.repository";
 import {
   ACCESS_TOKEN_COOKIE_NAME,
   REFRESH_TOKEN_COOKIE_NAME,
@@ -45,15 +41,14 @@ export async function logout() {
 export async function refresh(): Promise<string> {
   const refreshToken = (await getRefreshToken()) ?? "";
 
-  const res = await getReq(`${AUTH_BASE_URL}/refresh`, {
+  const res = await getReq<string>(`${AUTH_BASE_URL}/refresh`, {
     headers: {
       Refresh: `Bearer ${refreshToken}`,
     },
   });
 
-  if (!res.ok) {
-    const errData = (await res.json()) as ErrorData;
-    return errData.message;
+  if (typeof res !== "string") {
+    return res.error.message;
   }
 
   return "OK";

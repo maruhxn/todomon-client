@@ -82,14 +82,7 @@ export default async function DayCalendarPage({
       <div className="flex justify-end">
         <DayCalendarAddDialogBtn date={date} />
       </div>
-      <div className="grid grid-cols-1 gap-1">
-        {allDayTodos?.map((allDayTodo) => (
-          <DayCalendarAllDayTodoBox
-            key={allDayTodo.todoId}
-            allDayTodo={allDayTodo}
-          />
-        ))}
-      </div>
+      <AllDayTodoSection allDayTodos={allDayTodos} />
       <div className="relative grid gap-4">
         <div className="grid grid-cols-1 gap-4">
           <div className="grid relative">
@@ -127,5 +120,18 @@ export default async function DayCalendarPage({
         </div>
       </div>
     </main>
+  );
+}
+
+function AllDayTodoSection({ allDayTodos }: { allDayTodos: TodoItem[] }) {
+  return (
+    <div className="grid grid-cols-1 gap-1">
+      {allDayTodos.map((allDayTodo) => (
+        <DayCalendarAllDayTodoBox
+          key={allDayTodo.todoId}
+          allDayTodo={allDayTodo}
+        />
+      ))}
+    </div>
   );
 }

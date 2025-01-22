@@ -118,54 +118,54 @@ export default function AddTodoDialog({
     color,
     repeatInfoReqItem,
   }: CreateTodoRequest) {
-    try {
-      const payload = {
-        content,
-        startAt: getDateFromTimeString(date, startAt),
-        endAt: getDateFromTimeString(date, endAt),
-        isAllDay,
-        color,
-        repeatInfoReqItem: isRepeated
-          ? repeatInfoReqItem
-            ? {
-                frequency: repeatInfoReqItem.frequency,
-                interval: repeatInfoReqItem.interval,
-                byMonthDay: repeatInfoReqItem?.byMonthDay
-                  ? repeatInfoReqItem.byMonthDay.getDate()
-                  : null,
-                byDay: repeatInfoReqItem?.byDay
-                  ? repeatInfoReqItem.byDay.join(",")
-                  : null,
-                until: repeatInfoReqItem.until
-                  ? getISOString(repeatInfoReqItem.until)
-                  : null,
-                count: repeatInfoReqItem.count ?? null,
-              }
-            : null
-          : null,
-      };
+    const payload = {
+      content,
+      startAt: getDateFromTimeString(date, startAt),
+      endAt: getDateFromTimeString(date, endAt),
+      isAllDay,
+      color,
+      repeatInfoReqItem: isRepeated
+        ? repeatInfoReqItem
+          ? {
+              frequency: repeatInfoReqItem.frequency,
+              interval: repeatInfoReqItem.interval,
+              byMonthDay: repeatInfoReqItem?.byMonthDay
+                ? repeatInfoReqItem.byMonthDay.getDate()
+                : null,
+              byDay: repeatInfoReqItem?.byDay
+                ? repeatInfoReqItem.byDay.join(",")
+                : null,
+              until: repeatInfoReqItem.until
+                ? getISOString(repeatInfoReqItem.until)
+                : null,
+              count: repeatInfoReqItem.count ?? null,
+            }
+          : null
+        : null,
+    };
 
-      await createTodoRequest(payload as CreateTodoRequest);
+    const err = await createTodoRequest(payload as CreateTodoRequest);
 
-      openControlFn(false);
+    openControlFn(false);
 
-      form.reset();
+    form.reset();
 
-      setFrequency("DAILY");
-      setIsRepeated(false);
-      setRepeatExitType("one");
+    setFrequency("DAILY");
+    setIsRepeated(false);
+    setRepeatExitType("one");
 
-      toast({
-        title: "성공",
-        description: "투두 생성에 성공했습니다",
-      });
-    } catch (error: any) {
+    if (err?.error) {
       return toast({
         title: "실패",
-        description: error.message,
+        description: err.error.message,
         variant: "destructive",
       });
     }
+
+    toast({
+      title: "성공",
+      description: "투두 생성에 성공했습니다",
+    });
   }
 
   return (
